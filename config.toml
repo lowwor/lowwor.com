@@ -1,0 +1,24 @@
+BaseUrl= "http://lowwor.github.io/"
+LanguageCode= "zh-CN"
+Title= "Lowwor's Blog"
+paginate = 5
+DisqusShortname = "lowwor"
+Copyright = "All rights reserved - 2015"
+canonifyurls = true
+
+[params]
+  description = "A dedicated Android developer"
+  cover = "images/cover.jpg"
+  author = "Lowwor"
+  authorlocation = "Guangdong, China"
+  authorwebsite = "http://lowwor.com"
+  bio= "my bio"
+  logo = "images/logo.png"
+  googleAnalyticsUserID = "UA-79101-12"
+  # Optional RSS-Link, if not provided it defaults to the standard index.xml
+  RSSLink = "http://feeds.feedburner.com/..." 
+  githubName = "lowwor"
+  twitterName = "lowwor"
+  # facebookName = ""
+  # set true if you are not proud of using Hugo (true will hide the footer note "Proudly published with HUGO.....")
+  hideHUGOSupport = false
