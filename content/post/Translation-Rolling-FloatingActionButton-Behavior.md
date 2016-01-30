@@ -6,7 +6,7 @@ draft = false
 image = ""
 menu = "blog"
 share = true
-slug = ""
+slug = "Translation-Rolling-FloatingActionButton-Behavior"
 tags = ["翻译", "Android","FAB"]
 title = "[译]浮动操作按钮（FloatingActionButton）的滚动behavior"
 
