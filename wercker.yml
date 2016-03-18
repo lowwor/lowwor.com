@@ -14,3 +14,8 @@ deploy:
         token: $GIT_TOKEN
         domain: lowwor.com
         basedir: public
+    - add-ssh-key:
+        keyname: codingssh
+    - lowwor/coding-pages:
+        domain: lowwor.com
+        basedir: public
