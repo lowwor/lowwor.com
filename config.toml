@@ -27,7 +27,7 @@ canonifyurls = true
   post = "/:slug/"
 
 [[menu.main]]
-  name = "Blog"
+  name = "HOME"
   weight = -120
-  identifier = "blog"
-  #url = "/"
+  identifier = "home"
+  url = "/"
