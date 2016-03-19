@@ -15,7 +15,7 @@ deploy:
         domain: lowwor.com
         basedir: public
     - add-ssh-key:
-        keyname: codingssh
+        keyname: CODING_SSH
     - lowwor/coding-pages:
         domain: lowwor.com
         basedir: public
