@@ -30,7 +30,11 @@ title = "Android Studio使用笔记 -快捷键篇"
 `ctrl`+`g`   | Line  | 跳转行
 `alt`+`↑` |Previous Method| 跳转到上一方法
 `alt`+`↓` |Next Method| 跳转到下一方法
-
+`ctrl`+`shift`+`alt`+`↑`    |Previous Change | 上一处修改的地方
+`ctrl`+`shift`+`alt`+`↓`    |Next Change |   下一处修改的地方
+`ctrl`+`shift`+数字    | Toggle Bookmark数字 | 增加书签
+`ctrl`+数字    | Go to Bookmark数字 | 跳转到书签
+`shift`+`f11`    | Show Bookmarks | 显示所有书签
 
 编辑系列
 ----
@@ -50,8 +54,10 @@ title = "Android Studio使用笔记 -快捷键篇"
 `ctrl`+`w`        |Extend Selection| 拓大选择的内容区域
 `ctrl`+`shift`+`w`   |Shrink Selection|减小选择的内容区域
 `ctrl`+`d`|Duplicate Line Or Block| 复制当前行
-`shift`+`alt`+`↓` |Move Line Down| 选中的东西移到下一行
-`shift`+`alt`+`↑`  |Move Line Up|选中的东西移到上一行
+`shift`+`alt`+`↓` |Move Line Down| 当前行移到下一行
+`shift`+`alt`+`↑`  |Move Line Up|当前行移到上一行
+`shift`+`ctrl`+`↓` |Move Statement Down| 块移到下一行
+`shift`+`ctrl`+`↑`  |Move Statement Up|块移到上一行
 `ctrl`+`alt`+`l`  |Auto Indent Line|  格式代码
 `ctrl`+`alt`+`t`   |Surround With|  将一段代码用代码段（循环，try-catch，或者Runnable）包裹住
 `ctrl`+`shift`+`enter` |Complete Current Statement|   代码完成，1.在行末输入“；”；2.输入if后，按这个，会在if后自动加入括号和花括号； 3.在定义方法后，按这个，自动输入花括号  。Notice：如果你当前行已经输入完的话，按这个，会自动跳到下一行
@@ -60,6 +66,11 @@ title = "Android Studio使用笔记 -快捷键篇"
 `alt`+鼠标拖动    ||     区域选中，可以直接选择划过的内容
 `alt`+`j`           |Add Selection For Next Occurence|     选中一个区域，然后按alt+j，那么在下一个出现选中的内容的地方，会再次出现光标，这样可以同时在多处地方同时
 `shift`+`ctrl`+`alt`+`j`   |Select All Occurence|  选择所有的
+`alt`+`shift`   |?|  添加光标
+`ctrl`+`shift`+`u`  |Toggle Case|  大小写转换
+`shift`+`ctrl`+`←`   |Stretch to right|  向右增量选择
+`shift`+`ctrl`+`→`   |Stretch to left|  向左增量选择
+`shift`+`ctrl`+`j`   |Join Lines|  合并行
 
 面板系列
 ----
@@ -74,10 +85,10 @@ title = "Android Studio使用笔记 -快捷键篇"
 `ctrl`+`tab`   | Switcher  |切换窗口
 `f4`   | Jump To Source  |焦点跳到源文件，就是将光标焦点移动到编辑器内，（相当于enter选中文件然后点击esc）
 `alt`+`insert`  |New    | 新建
-`ctrl`+`alt`+`← `| Stretch To Left  |调整窗口大小
-`ctrl`+`alt`+`↑` | Stretch To Top   |调整窗口大小
-`ctrl`+`alt`+`↓` | Stretch To Bottom   |调整窗口大小
-`ctrl`+`alt`+`→`  | Stretch To Right  |调整窗口大小
+`ctrl`+`shift`+`← `| Stretch To Left  |调整窗口大小
+`ctrl`+`shift`+`↑` | Stretch To Top   |调整窗口大小
+`ctrl`+`shift`+`↓` | Stretch To Bottom   |调整窗口大小
+`ctrl`+`shift`+`→`  | Stretch To Right  |调整窗口大小
 
 搜索系列
 ----
