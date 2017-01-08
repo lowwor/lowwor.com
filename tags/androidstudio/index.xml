@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Androidstudio on Lowwor&#39;s Blog</title>
+    <link>http://www.lowwor.com/tags/androidstudio/</link>
+    <description>Recent content in Androidstudio on Lowwor&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>All rights reserved - 2016</copyright>
+    <lastBuildDate>Thu, 26 Nov 2015 21:41:57 +0800</lastBuildDate>
+    <atom:link href="http://www.lowwor.com/tags/androidstudio/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Android Studio使用笔记 -快捷键篇</title>
+      <link>http://www.lowwor.com/original-android-studio-keymap/</link>
+      <pubDate>Thu, 26 Nov 2015 21:41:57 +0800</pubDate>
+      
+      <guid>http://www.lowwor.com/original-android-studio-keymap/</guid>
+      <description>
+
+&lt;p&gt;在这里，罗列一些有用的快捷键，备查，随时更新。&lt;/p&gt;
+
+&lt;h2 id=&#34;跳转:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;跳转&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Windows快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;File Structure&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;弹出一个Structure窗口，内容是跟左边栏的Structure里的是一样&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;e&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;e&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Recent Files&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;最近打开文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;e&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;e&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Recently Changed Files&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;最近修改过的文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;b&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;b&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Declaration&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转到定义的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;b&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;b&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Implementation(s)&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转实现&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;[&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+ &lt;code&gt;←&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Back&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;上一个去到的地方。类似于eclipse的（ctrl+ ←）&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;]&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+ &lt;code&gt;→&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Forward&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;下一个去到的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;l&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;g&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Line&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Previous Method&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转到上一方法&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Next Method&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转到下一方法&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Previous Change&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;上一处修改的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Next Change&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;下一处修改的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;f3&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+数字&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Toggle Bookmark数字&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;增加书签&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+数字&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+数字&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Go to Bookmark数字&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转到书签&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;f3&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f11&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Show Bookmarks&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;显示所有书签&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;编辑:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;编辑&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;space&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;i&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Quick Definition&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;弹出一个小窗口，可以快速预览光标所指方法或类的实现&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Parameter Info&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;提示输入方法时，方法的参数&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;f2&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;f2&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Next Highlighted Error&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;在问题间跳转（右键编辑栏右边黄色等的错误空格，可以设置跳转的范围，只在高优先级的错误间跳转（go to high priority problem only）和在所有问题上（包括Warning等）跳转（go to next problem） ）&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f2&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f2&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Previous Highlighted Error&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;在问题间跳转&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Find Usages In File&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;找到文件中用到这个东西的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Show Usages&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;找到工程中用到这个东西的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Highlight Usages In File&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;高亮文件中所有用到这个东西的地方（如果在throw上使用这个，会显示所有抛出异常的地方，在return上则会显示所有有返回的地方）&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;enter&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;enter&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Start New Line&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;新的一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f6&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f6&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Rename&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;重命名（可以是变量，方法，类名，包名），会将整个工程中的名字重命名&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;backspace&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;backspace&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Delete To Word Start&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;删除光标前面的内容&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;delete&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;delete&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Delete To Word End&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;删除光标后面的内容（下一行的内容会接上来）&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;w&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Extend Selection&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;拓大选择的内容区域&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;w&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Shrink Selection&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;减小选择的内容区域&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;d&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;d&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Duplicate Line Or Block&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;复制当前行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Move Line Down&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;当前行移到下一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Move Line Up&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;当前行移到上一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Move Statement Down&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;块移到下一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Move Statement Up&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;块移到上一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;l&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;l&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Reformat Code&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;格式代码&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;t&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;t&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Surround With&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;将一段代码用代码段（循环，try-catch，或者Runnable）包裹住&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;enter&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;enter&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Complete Current Statement&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;代码完成，1.在行末输入“；”；2.输入if后，按这个，会在if后自动加入括号和花括号； 3.在定义方法后，按这个，自动输入花括号  。Notice：如果你当前行已经输入完的话，按这个，会自动跳到下一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;space&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;space&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Smart Type&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;智能代码完成 点一次，   再点一次的，会列出当前情景下，跟以输入代码相关的提示&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;v&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;v&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Paste From History&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;剪切板历史，这样有时候多次复制粘贴就不会搞错&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+鼠标拖动&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+鼠标拖动&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;区域选中，可以直接选择划过的内容&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;g&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Add Selection For Next Occurence&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;选中一个区域，然后按alt+j，那么在下一个出现选中的内容的地方，会再次出现光标，这样可以同时在多处地方同时&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;g&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Select All Occurence&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;选择所有的&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;?&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;添加光标&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;u&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;u&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Toggle Case&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;大小写转换&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;←&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;←&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch to right&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;向右增量选择&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;→&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;→&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch to left&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;向左增量选择&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Join Lines&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;合并行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;面板系列:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;面板系列&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Windows快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;1&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;1&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Project&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;打开关闭project面板&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Terminal&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;命令行终端，可以在设置中设置另外的终端程序&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;,&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;s&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Settings&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;设置窗口&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;home&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Jump To Navigation Bar&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;唤出导航条&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Restore Windows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;最大化编辑器窗口&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Toggle Presentation Mode&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;设置全屏(这个快捷键需要自己调出来)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;tab&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;tab&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Switcher&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;切换窗口&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+ &lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;f4&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Jump To Source&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;焦点跳到源文件，就是将光标焦点移动到编辑器内，（相当于enter选中文件然后点击esc）&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;insert&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;New&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;新建&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;←&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;←&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch To Left&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;调整窗口大小&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch To Top&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;调整窗口大小&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch To Bottom&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;调整窗口大小&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;→&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;→&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch To Right&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;调整窗口大小&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;搜索:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;搜索&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Windows快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;双击&lt;code&gt;shift&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;双击&lt;code&gt;shift&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Search Everywhere&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;搜索几乎所有东西  包括下面几个搜索类啊，文件啊之类的，甚至还包括窗口（tool windows）动作（actions）设置等&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;o&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Class&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;搜索类&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;o&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;File&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;搜索文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;o&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Symbol&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;搜索符号Symbo，像是变量啊，方法啊之类的可以用这个搜&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;在搜索后加上“：40”，表示去搜到文件的40行
+在搜索前加上斜杠：“/”，表示搜索的是文件夹
+在搜索中输入 类名（文件名）或他们的首字母加上“.”加上内容（symbol），可以直接搜索到某个类里面对应的一些东西&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;重构:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;重构&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Windows快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;v&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;v&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Variable&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;将表达式等于一个变量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;c&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;c&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Constant&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;提取为常量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;f&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;f&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Field&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;将鼠标指针处的变量变成类的变量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Parameter&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;提取为参数&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;m&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;m&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Method&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;将圈起来的代码提取为一个单独的方法&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;l&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Line&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;将行的内容提取出来&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;livetemplates:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;LiveTemplates&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Windows快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Insert Live Template&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;可以查看所有live templates&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Surround With Live Template&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;可以查看所有可以包裹住的live templates&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+&lt;h3 id=&#34;useful-symbols-for-mac:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;Useful symbols for Mac:&lt;/h3&gt;
+
+&lt;p&gt;&amp;#8984; = Command Key
+&amp;#8997; = Option Key&lt;br /&gt;
+&amp;#8679; = Shift Key&lt;br /&gt;
+&amp;#8963; = Control Key&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

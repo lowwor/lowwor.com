@@ -1,0 +1,1235 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Android on Lowwor&#39;s Blog</title>
+    <link>http://www.lowwor.com/tags/android/</link>
+    <description>Recent content in Android on Lowwor&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>All rights reserved - 2016</copyright>
+    <lastBuildDate>Wed, 06 Jan 2016 21:41:57 +0800</lastBuildDate>
+    <atom:link href="http://www.lowwor.com/tags/android/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>[译]更加强大的Dagger2</title>
+      <link>http://www.lowwor.com/translation-dagger2-even-sharper-less-square/</link>
+      <pubDate>Wed, 06 Jan 2016 21:41:57 +0800</pubDate>
+      
+      <guid>http://www.lowwor.com/translation-dagger2-even-sharper-less-square/</guid>
+      <description>
+
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;原文链接 : &lt;a href=&#34;https://blog.gouline.net/2015/05/04/dagger-2-even-sharper-less-square/&#34;&gt;Dagger 2: Even sharper, less square&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;原文作者 : &lt;a href=&#34;https://github.com/mgouline&#34;&gt;Mike Gouline&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;译文出自 : &lt;a href=&#34;http://www.devtf.cn&#34;&gt;开发技术前线 www.devtf.cn&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;转载声明: 本译文已授权&lt;a href=&#34;http://toutiao.io/download&#34;&gt;开发者头条&lt;/a&gt;享有独家转载权，未经允许，不得转载!&lt;/li&gt;
+&lt;li&gt;译者 : &lt;a href=&#34;https://github.com/lowwor&#34;&gt;lowwor&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;校对者: &lt;a href=&#34;https://github.com/maoruibin&#34;&gt;maoruibin&lt;/a&gt;&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;状态 :  完成&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;著名的依赖注入库Dagger的2.0版本变为生产版本只是一个时间问题，这似乎给了我一个写一篇关于它的文章的好理由。&lt;/p&gt;
+
+&lt;h2 id=&#34;dagger-1:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Dagger 1&lt;/h2&gt;
+
+&lt;p&gt;在这里，先做一个小小的历史回顾，Dagger是由&lt;a href=&#34;https://corner.squareup.com/&#34;&gt;Square&lt;/a&gt;公司的几个十分优秀的开发人员在2012年创建的，他们觉得将依赖注入应用到Java中是一个非常棒的点子，但是却觉得当时使用的&lt;a href=&#34;https://github.com/google/guice&#34;&gt;Guice&lt;/a&gt;库（当时的标准）的速度稍微有点慢。所以，他们开发了一个依赖于基于注解的代码生成（JSR-330），拥有着和Guice相似的API，但是性能更强、更加灵活的库。&lt;/p&gt;
+
+&lt;p&gt;Dagger的工作原理就是通过声明一些module，这些module里包括了所有你想要注入的依赖的提供者方法（provider method），
+把这些module加载到一个对象图谱（object graph）里，最终将图谱中的内容根据需要注入到对象（target）中。
+足够简单的结构（当然实现起来还是不那么简单的）有利于开发者解耦他们的代码,并且通过把初始化代码移动到由库自动生成的injector中,从而删掉每个类开始的地方那些丑陋的工厂类初始化代码。&lt;/p&gt;
+
+&lt;p&gt;然而，伴随着明显的优点（这些优点足以让大部分的Android开发者选择Dagger作为他们开发新项目中选择使用的第一个库），也存在着一些明显的问题，都是一些不可以简单地被一个或者两个的pull request就解决掉的问题，因为这些问题都是与整个底层架构相关的。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;图谱（Graph）是在运行时构建的    -影响性能，尤其是在频繁请求的用例中（后台服务器场景），&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;使用了反射（比如说  用&lt;code&gt;Class.forName()&lt;/code&gt;来获取已经生成的类型） - 使得生成的代码难以跟踪，同时ProGuard配置文件的编写成了噩梦&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;生成的代码不美观 -特别是与那些人手写的工厂类初始化方法相比较时，这一点尤其明显。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;因而，在Github的问题跟踪系统中，由于上述问题导致的一些issues，都被标记为“它就是这样的，这个问题会在Dagger2中解决”&lt;/p&gt;
+
+&lt;h2 id=&#34;dagger-2:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Dagger 2&lt;/h2&gt;
+
+&lt;p&gt;时间快进到现在，Google的core libraries团队（&lt;a href=&#34;https://github.com/google/guava&#34;&gt;Guava&lt;/a&gt;的创造者）与原来的Square的创建者一起推出了新一代的Dagger，并在一个月内就发布了生产版本&lt;/p&gt;
+
+&lt;p&gt;新的release版本，像之前所承诺的一样，解决了老版本的许多问题：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;不再使用反射 所有东西都是通过明确的方法调用来完成的（不需要配置ProGuard文件就可以正常混淆）&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;不再在运行时构建图表（graph） - 提高了性能，包括在单请求（per-request）用例中（据&lt;a href=&#34;https://plus.google.com/+GregoryKick&#34;&gt;Gregory Kick&lt;/a&gt;说，在谷歌的搜索产品中，它的表现比以前快了13%）&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;可追溯的 - 生成的代码更优雅，同时没有使用到反射，使得代码可读性提高，并且容易跟踪&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;usage-用法:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Usage 用法&lt;/h2&gt;
+
+&lt;p&gt;虽然Dagger也可以用在任何的Java工程中，但是在示例代码中，我们将专注于它在Android平台上的应用。不过，这些代码都可以很容易的就被改写，以用于其它地方，比如说，改写为服务器后端相关的代码。&lt;/p&gt;
+
+&lt;h2 id=&#34;module:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Module&lt;/h2&gt;
+
+&lt;p&gt;Dagger2中基本保持不变的部分是module。你仍然需要在这里定义可被注入的依赖的提供者方法（provider methods）。比如说，我们需要注入的是&lt;code&gt;SharedPreferences&lt;/code&gt;对象。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Module
+public class ApplicationModule {  
+private Application mApp;
+
+public ApplicationModule(Application app) {
+    mApp = app;
+}
+
+@Provides 
+@Singleton
+SharedPreferences provideSharedPrefs() {
+    return PreferenceManager.getDefaultSharedPreferences(mApp);
+}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;类似的，你可以提供（provide）其他的东西（并不是所有的，只是提供一些想法）&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Context&lt;/li&gt;
+&lt;li&gt;System services (e.g. LocationManager)&lt;/li&gt;
+&lt;li&gt;REST service (e.g. Retrofit)&lt;/li&gt;
+&lt;li&gt;Database manager (e.g. Realm)&lt;/li&gt;
+&lt;li&gt;Message passing (e.g. EventBus)&lt;/li&gt;
+&lt;li&gt;Analytics tracker (e.g. Google Analytics)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;component:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Component&lt;/h2&gt;
+
+&lt;p&gt;眼尖的读者可能发现了在&lt;code&gt;@Module&lt;/code&gt;注解中，&lt;code&gt;injects = {}&lt;/code&gt;参数不见了，那是因为Dagger2不再需要用到这个参数了。取而代之的是，&amp;rdquo;component&amp;rdquo;的概念，component是用来连接module和要注入依赖的对象（target）之间的桥梁。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Singleton
+@Component(modules = {ApplicationModule.class})
+public interface ApplicationComponent {  
+    void inject(DemoApplication app);
+    void inject(MainActivity activity);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;所以，你仍然需要注明（define）你要注入依赖的对象（target），但是，与之前不同的是，如果你现在不注明的话，在编译时就会提示&amp;rdquo;cannot find method&amp;rdquo;错误，而这个错误在以前，则是一个隐秘的运行时错误，只有在运行时才会报错。&lt;/p&gt;
+
+&lt;h2 id=&#34;application-应用:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Application 应用&lt;/h2&gt;
+
+&lt;p&gt;下一步，我们要了解的是你的component的容器。具体的方式由你的应用来决定，你可以选择用更复杂的方式保存你的components，但是对于这个例子来说，一个简单的保存在application中的component就足以说明情况了。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class DemoApplication extends Application {  
+private ApplicationComponent mComponent;
+
+@Override 
+public void onCreate() {
+    super.onCreate();
+    mComponent = DaggerApplicationComponent.builder()
+                    .applicationModule(new ApplicationModule(this))
+                    .build();
+}
+
+public ApplicationComponent getComponent() { 
+    return mComponent;
+}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里没有什么新的东西：只是之前我们创建并初始化的的是对象图谱（&lt;code&gt;ObjectGraph&lt;/code&gt;），而现在，我们则会创建并初始化对应的component。&lt;/p&gt;
+
+&lt;p&gt;注意：你很有可能会在某个时候想到这个问题，我在这先提前解释一下。上面例子中的&lt;code&gt;DaggerApplicationComponent&lt;/code&gt;是一个编译时生成的类（命名方式是 &lt;code&gt;Dagger%COMPONENT_NAME%&lt;/code&gt;），只要你对你的component做了改动，就需要重新编译工程，通过了，这个类才会被生成。所以，如果你找不到这个类，点击你的IDE的&amp;rdquo;Rebuild Project&amp;rdquo;，如果编译不出错的话，它就会出现了。类似的，&lt;code&gt;applicationModule()&lt;/code&gt;方法对应于你的module的名字。&lt;/p&gt;
+
+&lt;h2 id=&#34;injection-注入:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Injection 注入&lt;/h2&gt;
+
+&lt;p&gt;终于，经过前面几个部分为注入进行的准备后，我们来到了用到它们的地方了，我们要在activity中注入一个SharedPreferences对象。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public class MainActivity extends Activity {  
+@Inject SharedPreferences mSharedPrefs;
+
+@Override 
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    ((DemoApplication) getApplication()).getComponent().inject(this);
+
+    mSharedPrefs.edit().putString(“status”, “success!”).apply();
+}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;和期待的一样，&lt;code&gt;@Inject&lt;/code&gt;注解的使用没有任何改变，只是注入本身发生了一点变化。&lt;/p&gt;
+
+&lt;p&gt;这里有一点小小的不便，是由于&lt;code&gt;inject()&lt;/code&gt;方法是强类型关联的，这个我们在后面会讨论到。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Named injections 命名注入&lt;/strong&gt;
+如果你有几个对象是同一类型的，比如说两个不同的&lt;code&gt;SharedPreferences&lt;/code&gt;实例（可能是指向了不同的文件），这时候，我们可以怎么做？
+这时候，我们就需要用到命名注入了。只要在module的提供者（provider）里像下面一样使用&lt;code&gt;@Named&lt;/code&gt;注解&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Provides 
+@Named(“default”) 
+SharedPreferences provideDefaultSharedPrefs() { … }
+
+@Provides 
+@Named(“secret”)
+SharedPreferences provideSecretSharedPrefs() { … }  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在要注入的对象中，注入的方法是一样的&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Inject @Named(“default”) SharedPreferences mDefaultSharedPrefs;
+@Inject @Named(“secret”) SharedPreferences mSecretSharedPrefs;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;很简单，没有什么好解释的，但是这是一个非常有用的用法，值得一提。&lt;/p&gt;
+
+&lt;h2 id=&#34;lazy-injections-延迟注入:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Lazy injections 延迟注入&lt;/h2&gt;
+
+&lt;p&gt;说到性能，如果在一个要注入依赖的对象中，有很多不同的依赖需要被注入，有些依赖只会在某些特定的场景才会被用到（比如说 用户输入的时候）。在这种情况下，如果我们没有用到这个依赖，也要去注入的话，会导致资源的浪费，所以，我们可以选择用延迟注入（lazy injection）替代。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Inject Lazy&amp;lt;SharedPreferences&amp;gt; mLazySharedPrefs;
+
+void onSaveBtnClicked() {  
+    mLazySharedPrefs.get()
+    .edit().putString(“status”, “lazy…”)
+    .apply();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的意思是说，&lt;code&gt;mLazySharedPrefs&lt;/code&gt;只有在第一次调用&lt;code&gt;get()&lt;/code&gt;方法的时候才会被注入。之后所有的&lt;code&gt;get()&lt;/code&gt;调用都会是同一个mLazySharedPrefs实例。&lt;/p&gt;
+
+&lt;h2 id=&#34;provider-injections-注入提供者:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Provider injections 注入提供者&lt;/h2&gt;
+
+&lt;p&gt;最后一个诀窍，如果你是在一个全新的你可以完全掌控住的工程中，你想要实现这样的注入的话，你可能会考虑用其它方法来替代，比如说&lt;a href=&#34;http://en.wikipedia.org/wiki/Factory_%28object-oriented_programming%29&#34;&gt;工厂方法&lt;/a&gt;。
+但是，对于历史遗留代码来说，这个诀窍将会很有用。&lt;/p&gt;
+
+&lt;p&gt;想象这样一个场景，你需要创建一个对象的多个实例，而不是仅仅注入单个实例。在这时候，你需要注入一个提供者（&lt;code&gt;Provider&amp;lt;T&amp;gt;&lt;/code&gt;）&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Inject Provider&amp;lt;Entry&amp;gt; mEntryProvider;
+
+Entry entry1 = mEntryProvider.get();  
+Entry entry2 = mEntryProvider.get();  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在这个例子中，你的提供者（provider）会创建两个&lt;code&gt;Entry&lt;/code&gt;对象的实例。有一点要注意的是，module中的实例如何创建完全是由你决定的&lt;/p&gt;
+
+&lt;h2 id=&#34;annoyances-烦人的地方:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Annoyances 烦人的地方&lt;/h2&gt;
+
+&lt;p&gt;还好，我真的不能把这个部分叫做问题，因为都是一些不足以称为问题的东西。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;烦人的地方#1：&lt;/strong&gt; 像是之前提到的，&lt;code&gt;inject()&lt;/code&gt;方法与要注入的target，是强类型关联的。这对于debug来说很好，但是这对于我们希望在基类中实现注入的普遍做法变得复杂（如在 base activity，fragment等中）。&lt;/p&gt;
+
+&lt;p&gt;直觉上，你觉得应该在基类中创建一个&lt;code&gt;inject()&lt;/code&gt;方法，但是，这样做的话，它就仅仅会注入那些在基类中声明的依赖，在他的子类中声明的依赖并不会被注入。&lt;/p&gt;
+
+&lt;p&gt;解决方法1：这也是我所使用的解决方案，就是在基类中声明一个抽象的注入方法来进行实际上的注入&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Override
+public void onCreate(Bundle savedInstanceState) {  
+    super.onCreate(savedInstanceState);
+    injectComponent(((DemoApplication) getApplication()).getComponent());
+}
+
+protected void injectComponent(ApplicationComponent component);  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后在你的子类中实现这个方法&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+@Override
+protected void injectComponent(ApplicationComponent component) {  
+    component.inject(this);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;与Dagger1相比，需要多写一个额外的方法，来实现同样的事情。但是为了可以在编译时查错，这个代价是完全值得的。&lt;/p&gt;
+
+&lt;p&gt;解决方法2：另一个选择就是利用反射。如果你看到反射就不想看下去的话，并不怪你：因为这也是Dagger2所提到的点，不利用反射。但是，如果你坚持要在基类中实现注入，而不想在子类中增加额外方法的话，请继续往下看。&lt;/p&gt;
+
+&lt;p&gt;这个解决方法简而言之就是要找到你要注入的类型所对应的&lt;code&gt;inject()&lt;/code&gt;方法。&lt;/p&gt;
+
+&lt;p&gt;首先，你要将在component类中声明的所有方法对应上方法的参数类型来保存在缓存中（因为&lt;code&gt;inject()&lt;/code&gt;方法只能有一个参数，所以只需保存第一个有一个参数的方法就行）&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Keep the returned cache in some helper.
+Map&amp;lt;Class, Method&amp;gt; buildCache() {  
+    Map&amp;lt;Class, Method&amp;gt; cache = new HashMap&amp;lt;&amp;gt;();
+    for (Method m : ApplicationComponent.class.getDeclaredMethods()) {
+        Class[] types = m.getParameterTypes();
+        if (types.length == 1) {
+        cache.put(types[0], m);
+        }
+    }
+return cache;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最后，你只要在需要注入依赖的对象（target）中调用&lt;code&gt;getClass()&lt;/code&gt;，找到缓存中对应的方法，然后使用&lt;code&gt;invoke()&lt;/code&gt;来调用这个方法就行了。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Use for injecting targets of any type.
+void inject(ApplicationComponent component, Object target) {  
+    Method m = cache.get(target.getClass());
+    if (m != null) {
+    m.invoke(component, target);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在这里，我想重申一下,这个解决方法只是为了省几行代码，却对整个流程进行了过度的设计，我个人来说是不会这样做的，但是对于那些想把注入的过程隐藏在基类中，或者是在旧的代码中已经是这样做的人来说，或许会觉得这个方法是有用的。&lt;/p&gt;
+
+&lt;h3 id=&#34;annoyance-2-烦人的地方2:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Annoyance #2:烦人的地方2：&lt;/h3&gt;
+
+&lt;p&gt;Component的实现类（比如说：&lt;code&gt;DaggerApplicationComponent&lt;/code&gt;）只有在重新编译工程之后才能出现，同时如果在编译时出现任何与注入相关的错误的话，都会提示找不到这个类（换句话说，这个类没有被生成）。&lt;/p&gt;
+
+&lt;p&gt;我承认这虽然不是什么大问题，但是你会觉得这有点烦，至少在你刚开始使用Dagger2的那几个小时里会这样觉得，尤其是这几个小时还是你对component改动比较频繁的时候。因而，这个问题还是值得提一下的。&lt;/p&gt;
+
+&lt;p&gt;解决方法：据我所知，没有。&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion-结论:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Conclusion 结论&lt;/h2&gt;
+
+&lt;p&gt;我不想在这里长篇大论的总结，所以我会尽可能说的简洁精练&lt;/p&gt;
+
+&lt;p&gt;Dagger2是否比原来的版本有明显的进步？是的，提升非常大。&lt;/p&gt;
+
+&lt;p&gt;是否还存在问题呢？是的，但是这些问题并没有严重到让你连试都不想试，甚至不会影响到你在生产环境的工程中使用它&lt;/p&gt;
+
+&lt;h2 id=&#34;updates-更新:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Updates 更新&lt;/h2&gt;
+
+&lt;p&gt;2015-05-11: 根据Jake Wharton的评论，更正了对Dagger 1中反射使用的陈述。&lt;/p&gt;
+
+&lt;h2 id=&#34;source-源码:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Source 源码&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/mgouline/android-samples/tree/master/dagger2-demo&#34;&gt;Dagger 2 Demo&lt;/a&gt; (GitHub)&lt;/p&gt;
+
+&lt;h2 id=&#34;resources-资源:6cb4c08defbc648acc6094d1fc591a9d&#34;&gt;Resources 资源&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://google.github.io/dagger/&#34;&gt;Documentation&lt;/a&gt;
+&lt;a href=&#34;https://www.youtube.com/watch?v=oK_XtfXPkqw&#34;&gt;Video introduction&lt;/a&gt; - by Gregory Kick (Google)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Android Studio使用笔记 -快捷键篇</title>
+      <link>http://www.lowwor.com/original-android-studio-keymap/</link>
+      <pubDate>Thu, 26 Nov 2015 21:41:57 +0800</pubDate>
+      
+      <guid>http://www.lowwor.com/original-android-studio-keymap/</guid>
+      <description>
+
+&lt;p&gt;在这里，罗列一些有用的快捷键，备查，随时更新。&lt;/p&gt;
+
+&lt;h2 id=&#34;跳转:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;跳转&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Windows快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;File Structure&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;弹出一个Structure窗口，内容是跟左边栏的Structure里的是一样&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;e&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;e&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Recent Files&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;最近打开文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;e&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;e&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Recently Changed Files&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;最近修改过的文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;b&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;b&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Declaration&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转到定义的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;b&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;b&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Implementation(s)&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转实现&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;[&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+ &lt;code&gt;←&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Back&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;上一个去到的地方。类似于eclipse的（ctrl+ ←）&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;]&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+ &lt;code&gt;→&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Forward&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;下一个去到的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;l&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;g&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Line&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Previous Method&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转到上一方法&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Next Method&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转到下一方法&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Previous Change&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;上一处修改的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Next Change&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;下一处修改的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;f3&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+数字&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Toggle Bookmark数字&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;增加书签&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+数字&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+数字&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Go to Bookmark数字&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;跳转到书签&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;f3&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f11&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Show Bookmarks&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;显示所有书签&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;编辑:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;编辑&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;space&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;i&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Quick Definition&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;弹出一个小窗口，可以快速预览光标所指方法或类的实现&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Parameter Info&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;提示输入方法时，方法的参数&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;f2&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;f2&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Next Highlighted Error&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;在问题间跳转（右键编辑栏右边黄色等的错误空格，可以设置跳转的范围，只在高优先级的错误间跳转（go to high priority problem only）和在所有问题上（包括Warning等）跳转（go to next problem） ）&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f2&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f2&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Previous Highlighted Error&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;在问题间跳转&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Find Usages In File&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;找到文件中用到这个东西的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Show Usages&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;找到工程中用到这个东西的地方&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;f7&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Highlight Usages In File&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;高亮文件中所有用到这个东西的地方（如果在throw上使用这个，会显示所有抛出异常的地方，在return上则会显示所有有返回的地方）&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;enter&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;enter&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Start New Line&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;新的一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f6&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f6&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Rename&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;重命名（可以是变量，方法，类名，包名），会将整个工程中的名字重命名&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;backspace&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;backspace&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Delete To Word Start&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;删除光标前面的内容&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;delete&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;delete&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Delete To Word End&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;删除光标后面的内容（下一行的内容会接上来）&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;w&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Extend Selection&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;拓大选择的内容区域&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;w&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Shrink Selection&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;减小选择的内容区域&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;d&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;d&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Duplicate Line Or Block&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;复制当前行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Move Line Down&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;当前行移到下一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Move Line Up&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;当前行移到上一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Move Statement Down&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;块移到下一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Move Statement Up&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;块移到上一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;l&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;l&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Reformat Code&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;格式代码&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;t&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;t&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Surround With&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;将一段代码用代码段（循环，try-catch，或者Runnable）包裹住&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;enter&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;enter&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Complete Current Statement&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;代码完成，1.在行末输入“；”；2.输入if后，按这个，会在if后自动加入括号和花括号； 3.在定义方法后，按这个，自动输入花括号  。Notice：如果你当前行已经输入完的话，按这个，会自动跳到下一行&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;space&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;space&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Smart Type&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;智能代码完成 点一次，   再点一次的，会列出当前情景下，跟以输入代码相关的提示&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;v&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;v&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Paste From History&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;剪切板历史，这样有时候多次复制粘贴就不会搞错&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+鼠标拖动&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+鼠标拖动&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;区域选中，可以直接选择划过的内容&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;g&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Add Selection For Next Occurence&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;选中一个区域，然后按alt+j，那么在下一个出现选中的内容的地方，会再次出现光标，这样可以同时在多处地方同时&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;g&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Select All Occurence&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;选择所有的&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;?&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;添加光标&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;u&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;u&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Toggle Case&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;大小写转换&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;←&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;←&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch to right&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;向右增量选择&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;→&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;→&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch to left&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;向左增量选择&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Join Lines&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;合并行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;面板系列:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;面板系列&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Windows快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;1&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;1&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Project&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;打开关闭project面板&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Terminal&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;命令行终端，可以在设置中设置另外的终端程序&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;,&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;s&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Settings&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;设置窗口&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;home&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Jump To Navigation Bar&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;唤出导航条&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;f12&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Restore Windows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;最大化编辑器窗口&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Toggle Presentation Mode&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;设置全屏(这个快捷键需要自己调出来)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;tab&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;tab&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Switcher&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;切换窗口&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+ &lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;f4&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Jump To Source&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;焦点跳到源文件，就是将光标焦点移动到编辑器内，（相当于enter选中文件然后点击esc）&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;insert&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;New&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;新建&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;←&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;←&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch To Left&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;调整窗口大小&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;↑&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch To Top&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;调整窗口大小&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;↓&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch To Bottom&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;调整窗口大小&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;→&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;→&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Stretch To Right&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;调整窗口大小&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;搜索:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;搜索&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Windows快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;双击&lt;code&gt;shift&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;双击&lt;code&gt;shift&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Search Everywhere&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;搜索几乎所有东西  包括下面几个搜索类啊，文件啊之类的，甚至还包括窗口（tool windows）动作（actions）设置等&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;o&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Class&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;搜索类&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;o&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;File&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;搜索文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;o&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;shift&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Symbol&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;搜索符号Symbo，像是变量啊，方法啊之类的可以用这个搜&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;在搜索后加上“：40”，表示去搜到文件的40行
+在搜索前加上斜杠：“/”，表示搜索的是文件夹
+在搜索中输入 类名（文件名）或他们的首字母加上“.”加上内容（symbol），可以直接搜索到某个类里面对应的一些东西&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;重构:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;重构&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Windows快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;v&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;v&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Variable&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;将表达式等于一个变量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;c&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;c&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Constant&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;提取为常量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;f&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;f&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Field&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;将鼠标指针处的变量变成类的变量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Parameter&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;提取为参数&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;m&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;m&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Method&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;将圈起来的代码提取为一个单独的方法&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;l&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Line&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;将行的内容提取出来&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;livetemplates:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;LiveTemplates&lt;/h2&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Mac快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Windows快捷键&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;英文&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Insert Live Template&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;可以查看所有live templates&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;cmd&lt;/code&gt;+&lt;code&gt;option&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;code&gt;ctrl&lt;/code&gt;+&lt;code&gt;alt&lt;/code&gt;+&lt;code&gt;j&lt;/code&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Surround With Live Template&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;可以查看所有可以包裹住的live templates&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+&lt;h3 id=&#34;useful-symbols-for-mac:f052f81bd05a9f72526bcf57ec5d4260&#34;&gt;Useful symbols for Mac:&lt;/h3&gt;
+
+&lt;p&gt;&amp;#8984; = Command Key
+&amp;#8997; = Option Key&lt;br /&gt;
+&amp;#8679; = Shift Key&lt;br /&gt;
+&amp;#8963; = Control Key&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>[译]浮动操作按钮（FloatingActionButton）的滚动behavior</title>
+      <link>http://www.lowwor.com/translation-rolling-floatingactionbutton-behavior/</link>
+      <pubDate>Tue, 24 Nov 2015 21:41:57 +0800</pubDate>
+      
+      <guid>http://www.lowwor.com/translation-rolling-floatingactionbutton-behavior/</guid>
+      <description>
+
+&lt;blockquote&gt;
+&lt;p&gt;原文链接 : &lt;a href=&#34;https://medium.com/@nullthemall/rolling-floatingactionbutton-behavior-d86fb797a1e#.7esf5u4xo&#34;&gt;Rolling FloatingActionButton Behavior&lt;/a&gt;
+作者 :    Nikola Despotoski&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;平常，我喜欢上materialup.com去看看有没有什么新的内容，或者用Material guideline里的关键字来搜索看相关的内容。几天前，我看到了这张图里的效果:
+![A rolling fab, freaking lolz.][1]&lt;/p&gt;
+
+&lt;h2 id=&#34;滚动进入效果:64c6e42ea9dd63f69d1ed94d19aa1c77&#34;&gt;滚动进入效果&lt;/h2&gt;
+
+&lt;p&gt;为了保证SnackBar的behavior仍然有效，我们要在原有的FloatinghActionButton.Behavior基础上实现rolling behavior。
+只有在继承了nested scrolling动作的view滑动时，我们才需要滚动FAB：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Override
+public boolean layoutDependsOn(....View dependency) {
+    return super.layoutDependsOn(parent, child, dependency) || dependency instanceof NestedScrollingChild;
+}
+
+@Override
+public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, ..., int nestedScrollAxes) {
+    return (nestedScrollAxes &amp;amp; ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当界面滑动的距离差不多是FAB的高度时，我们让FAB开始滚动离开
+使拉力（tension）的阀值在0.5f，用来控制FAB是否完全滚动离开。
+当我们向下滑动的时候，让FAB开始滚动进入。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Override
+public void onNestedPreScroll(... FloatingActionButton child... int dx, int dy, ..) {
+    if (dy &amp;gt; 0 &amp;amp;&amp;amp; mTotalDy &amp;lt; 0) {
+        mTotalDy = 0;
+        if (mTensionFactor &amp;lt;= 0.5f)
+            rollInFabCompletely(child);
+    } else if (dy &amp;lt; 0 &amp;amp;&amp;amp; mTotalDy &amp;gt; 0) {
+        mTotalDy = 0;
+    }
+
+    mTotalDy += dy;
+    if (mTotalDy &amp;gt;= child.getHeight() &amp;amp;&amp;amp; getRollingFabState() == IDLE) {
+        float rollBy = (float) (mTotalDy - child.getHeight()) / child.getHeight();
+        rollOutFabBy(child, rollBy);
+    } else if (mTotalDy &amp;lt; -child.getHeight()) {
+        if (getRollingFabState() ==   RollingFabState.ROLLED_OUT) {
+            rollInFabCompletely(child);
+        } else if (getRollingFabState() ==   RollingFabState.ROLLING_OUT) {
+            ViewCompat.animate(child).cancel();
+            rollInFabCompletely(child);
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果滑动的距离没够，利用拉力（Tension）来使FAB恢复原来的位置和旋转角度。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Override
+public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target) {
+ if (mTensionFactor &amp;gt;= 0.5)
+    postRollFabOutCompletely(child);
+else if (mTensionFactor &amp;lt; 0.5 &amp;amp;&amp;amp; getRollingFabState() !=   RollingFabState.ROLLED_OUT)
+    postRollFabInCompletely(child);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;代码如下：
+RollingFloatingActionButtonBehavior.java&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;package samples.despotoski.nikola.com.appbarlayoutsample.view;
+
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
+import android.support.annotation.IntDef;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.view.NestedScrollingChild;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
+import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.animation.Interpolator;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/**
+ * Created by Nikola D. on 11/17/2015.
+ */
+public class RollingFloatingActionButtonBehavior extends FloatingActionButton.Behavior {
+    private static final Interpolator FAST_OUT_SLOW_IN_INTERPOLATOR = new FastOutLinearInInterpolator();
+    private static final float TENSION_THRESHOLD = 0.5f;
+    private int mTotalDy;
+
+
+    private int mRollingState = RollingFabState.IDLE;
+    private boolean mTensionFlag = false;
+    private int mOffscreenTranslation;
+    private float mTensionFactor = 0f;
+    private long mTimeInitial;
+    private float mCurrentSpeed;
+    private static final float VELOCITY_THRESHOLD = 100;
+
+    public int getRollingFabState() {
+        return mRollingState;
+    }
+
+
+    @IntDef({RollingFabState.IDLE, RollingFabState.ROLLING_OUT, RollingFabState.ROLLING_IN, RollingFabState.ROLLED_OUT})
+    private @interface RollingFabState {
+        int ROLLING_OUT = -1;
+        int ROLLING_IN = 0;
+        int ROLLED_OUT = 1;
+        int IDLE = 2;
+    }
+
+
+    public RollingFloatingActionButtonBehavior() {
+        super();
+    }
+
+
+    public RollingFloatingActionButtonBehavior(Context context, AttributeSet attrs) {
+
+    }
+
+    private ViewPropertyAnimatorListener mRollingOutListener = new ViewPropertyAnimatorListenerAdapter() {
+        @Override
+        public void onAnimationStart(View view) {
+            setRollingState(RollingFabState.ROLLING_OUT);
+        }
+
+        @Override
+        public void onAnimationEnd(View view) {
+            setRollingState(RollingFabState.ROLLED_OUT);
+        }
+    };
+
+    private ViewPropertyAnimatorListener mRollingInListener = new ViewPropertyAnimatorListenerAdapter() {
+        @Override
+        public void onAnimationStart(View view) {
+            setRollingState(RollingFabState.ROLLING_IN);
+        }
+
+        @Override
+        public void onAnimationEnd(View view) {
+            mTensionFactor = 0.0f;
+            setRollingState(RollingFabState.IDLE);
+        }
+    };
+
+
+    @Override
+    public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+        return super.layoutDependsOn(parent, child, dependency) || dependency instanceof NestedScrollingChild;
+    }
+
+    @Override
+    public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View directTargetChild, View target, int nestedScrollAxes) {
+        return (nestedScrollAxes &amp;amp; ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
+    }
+
+    @Override
+    public boolean onNestedPreFling(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, float velocityX, float velocityY) {
+        if (Math.abs(velocityY) &amp;lt; Math.abs(velocityX)) return false;
+
+        if (Math.abs(velocityY) &amp;gt;= child.getHeight()) {
+            if (velocityY &amp;lt; 0 &amp;amp;&amp;amp; getRollingFabState() == RollingFabState.ROLLED_OUT) {
+                postRollFabInCompletely(child);
+            } else if (velocityY &amp;gt; 0 &amp;amp;&amp;amp; getRollingFabState() == RollingFabState.IDLE) {
+                postRollFabOutCompletely(child);
+            }
+        }
+        return false;
+    }
+
+    private void postRollFabOutCompletely(final FloatingActionButton fab) {
+        ViewCompat.postOnAnimation(fab, new Runnable() {
+            @Override
+            public void run() {
+                rollOutFabCompletely(fab);
+            }
+        });
+    }
+
+    private void postRollFabInCompletely(final FloatingActionButton fab) {
+        ViewCompat.postOnAnimation(fab, new Runnable() {
+            @Override
+            public void run() {
+                rollInFabCompletely(fab);
+            }
+        });
+    }
+
+    @Override
+    public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dx, int dy, int[] consumed) {
+        if (dy &amp;gt; 0 &amp;amp;&amp;amp; mTotalDy &amp;lt; 0) {
+            mTotalDy = 0;
+            if (mTensionFactor &amp;lt;= 0.5f)
+                rollInFabCompletely(child);
+        } else if (dy &amp;lt; 0 &amp;amp;&amp;amp; mTotalDy &amp;gt; 0) {
+            mTotalDy = 0;
+        }
+
+        mTotalDy += dy;
+        if (mTotalDy &amp;gt;= child.getHeight() &amp;amp;&amp;amp; getRollingFabState() == RollingFabState.IDLE) {
+            float rollBy = (float) (mTotalDy - child.getHeight()) / child.getHeight();
+            rollOutFabBy(child, rollBy);
+        } else if (mTotalDy &amp;lt; -child.getHeight()) {
+            if (getRollingFabState() == RollingFabState.ROLLED_OUT) {
+                rollInFabCompletely(child);
+            } else if (getRollingFabState() == RollingFabState.ROLLING_OUT) {
+                ViewCompat.animate(child).cancel();
+                rollInFabCompletely(child);
+            }
+        }
+    }
+
+    private void rollInFabCompletely(FloatingActionButton child) {
+        ViewCompat.animate(child).translationX(0f).translationY(0f).rotation(0).setDuration(200)
+                .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR).setListener(mRollingInListener).start();
+
+    }
+
+
+    @Override
+    public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target) {
+        if (mTensionFactor &amp;gt;= 0.5)
+            postRollFabOutCompletely(child);
+        else if (mTensionFactor &amp;lt; 0.5 &amp;amp;&amp;amp; getRollingFabState() != RollingFabState.ROLLED_OUT)
+            postRollFabInCompletely(child);
+    }
+
+
+    @Override
+    public boolean onLayoutChild(CoordinatorLayout parent, FloatingActionButton child,
+                                 int layoutDirection) {
+        boolean superLayout = super.onLayoutChild(parent, child, layoutDirection);
+        float center = child.getWidth() / 2;
+        ViewCompat.setPivotX(child, center);
+        ViewCompat.setPivotY(child, center);
+        mOffscreenTranslation = child.getWidth() + child.getWidth() / 2;
+        return superLayout;
+    }
+
+    private void rollOutFabBy(final FloatingActionButton child, float rollBy) {
+        float offScreen = Math.abs(child.getWidth() * rollBy);
+        if (offScreen &amp;lt;= child.getWidth() * TENSION_THRESHOLD) {
+            ViewCompat.setRotation(child, 360 * rollBy);
+            ViewCompat.setTranslationX(child, offScreen);
+            ViewCompat.setTranslationY(child, offScreen);
+            mTensionFlag = true;
+            mTensionFactor = rollBy;
+        } else {
+            mTensionFlag = false;
+            postRollFabOutCompletely(child);
+        }
+    }
+
+
+    private void rollOutFabCompletely(FloatingActionButton child) {
+        ViewCompat.animate(child).translationX(mOffscreenTranslation).translationY(mOffscreenTranslation).rotation(360).setDuration(200).setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR).setListener(mRollingOutListener).start();
+    }
+
+    @Override
+    public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
+        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
+    }
+
+    @Override
+    public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+        if (dependency instanceof Snackbar.SnackbarLayout || dependency instanceof AppBarLayout) {
+            super.onDependentViewChanged(parent, child, dependency);
+        }
+        return false;
+    }
+
+
+    private void setRollingState(@RollingFabState int rollingState) {
+        this.mRollingState = rollingState;
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;用法：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; &amp;lt;android.support.design.widget.FloatingActionButton
+        android:id=&amp;quot;@+id/fab&amp;quot;
+        android:layout_width=&amp;quot;wrap_content&amp;quot;
+        android:layout_height=&amp;quot;wrap_content&amp;quot;
+        android:layout_margin=&amp;quot;@dimen/fab_margin&amp;quot;
+        android:src=&amp;quot;@android:drawable/ic_dialog_email&amp;quot;
+        app:layout_anchorGravity=&amp;quot;bottom|end&amp;quot;
+        app:layout_anchor=&amp;quot;@+id/nested_scrollview&amp;quot;
+        app:layout_behavior=&amp;quot;.view.RollingFloatingActionButtonBehavior&amp;quot; /&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;[1]: &lt;a href=&#34;https://cdn-images-1.medium.com/max/800/1*yQl9PjYWSVrgpmDMbPgwCg.gif&#34;&gt;https://cdn-images-1.medium.com/max/800/1*yQl9PjYWSVrgpmDMbPgwCg.gif&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Fab on Lowwor&#39;s Blog</title>
+    <link>http://www.lowwor.com/tags/fab/</link>
+    <description>Recent content in Fab on Lowwor&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>All rights reserved - 2016</copyright>
+    <lastBuildDate>Tue, 24 Nov 2015 21:41:57 +0800</lastBuildDate>
+    <atom:link href="http://www.lowwor.com/tags/fab/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>[译]浮动操作按钮（FloatingActionButton）的滚动behavior</title>
+      <link>http://www.lowwor.com/translation-rolling-floatingactionbutton-behavior/</link>
+      <pubDate>Tue, 24 Nov 2015 21:41:57 +0800</pubDate>
+      
+      <guid>http://www.lowwor.com/translation-rolling-floatingactionbutton-behavior/</guid>
+      <description>
+
+&lt;blockquote&gt;
+&lt;p&gt;原文链接 : &lt;a href=&#34;https://medium.com/@nullthemall/rolling-floatingactionbutton-behavior-d86fb797a1e#.7esf5u4xo&#34;&gt;Rolling FloatingActionButton Behavior&lt;/a&gt;
+作者 :    Nikola Despotoski&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;平常，我喜欢上materialup.com去看看有没有什么新的内容，或者用Material guideline里的关键字来搜索看相关的内容。几天前，我看到了这张图里的效果:
+![A rolling fab, freaking lolz.][1]&lt;/p&gt;
+
+&lt;h2 id=&#34;滚动进入效果:64c6e42ea9dd63f69d1ed94d19aa1c77&#34;&gt;滚动进入效果&lt;/h2&gt;
+
+&lt;p&gt;为了保证SnackBar的behavior仍然有效，我们要在原有的FloatinghActionButton.Behavior基础上实现rolling behavior。
+只有在继承了nested scrolling动作的view滑动时，我们才需要滚动FAB：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Override
+public boolean layoutDependsOn(....View dependency) {
+    return super.layoutDependsOn(parent, child, dependency) || dependency instanceof NestedScrollingChild;
+}
+
+@Override
+public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, ..., int nestedScrollAxes) {
+    return (nestedScrollAxes &amp;amp; ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当界面滑动的距离差不多是FAB的高度时，我们让FAB开始滚动离开
+使拉力（tension）的阀值在0.5f，用来控制FAB是否完全滚动离开。
+当我们向下滑动的时候，让FAB开始滚动进入。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Override
+public void onNestedPreScroll(... FloatingActionButton child... int dx, int dy, ..) {
+    if (dy &amp;gt; 0 &amp;amp;&amp;amp; mTotalDy &amp;lt; 0) {
+        mTotalDy = 0;
+        if (mTensionFactor &amp;lt;= 0.5f)
+            rollInFabCompletely(child);
+    } else if (dy &amp;lt; 0 &amp;amp;&amp;amp; mTotalDy &amp;gt; 0) {
+        mTotalDy = 0;
+    }
+
+    mTotalDy += dy;
+    if (mTotalDy &amp;gt;= child.getHeight() &amp;amp;&amp;amp; getRollingFabState() == IDLE) {
+        float rollBy = (float) (mTotalDy - child.getHeight()) / child.getHeight();
+        rollOutFabBy(child, rollBy);
+    } else if (mTotalDy &amp;lt; -child.getHeight()) {
+        if (getRollingFabState() ==   RollingFabState.ROLLED_OUT) {
+            rollInFabCompletely(child);
+        } else if (getRollingFabState() ==   RollingFabState.ROLLING_OUT) {
+            ViewCompat.animate(child).cancel();
+            rollInFabCompletely(child);
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果滑动的距离没够，利用拉力（Tension）来使FAB恢复原来的位置和旋转角度。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Override
+public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target) {
+ if (mTensionFactor &amp;gt;= 0.5)
+    postRollFabOutCompletely(child);
+else if (mTensionFactor &amp;lt; 0.5 &amp;amp;&amp;amp; getRollingFabState() !=   RollingFabState.ROLLED_OUT)
+    postRollFabInCompletely(child);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;代码如下：
+RollingFloatingActionButtonBehavior.java&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;package samples.despotoski.nikola.com.appbarlayoutsample.view;
+
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
+import android.support.annotation.IntDef;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.view.NestedScrollingChild;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
+import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.animation.Interpolator;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/**
+ * Created by Nikola D. on 11/17/2015.
+ */
+public class RollingFloatingActionButtonBehavior extends FloatingActionButton.Behavior {
+    private static final Interpolator FAST_OUT_SLOW_IN_INTERPOLATOR = new FastOutLinearInInterpolator();
+    private static final float TENSION_THRESHOLD = 0.5f;
+    private int mTotalDy;
+
+
+    private int mRollingState = RollingFabState.IDLE;
+    private boolean mTensionFlag = false;
+    private int mOffscreenTranslation;
+    private float mTensionFactor = 0f;
+    private long mTimeInitial;
+    private float mCurrentSpeed;
+    private static final float VELOCITY_THRESHOLD = 100;
+
+    public int getRollingFabState() {
+        return mRollingState;
+    }
+
+
+    @IntDef({RollingFabState.IDLE, RollingFabState.ROLLING_OUT, RollingFabState.ROLLING_IN, RollingFabState.ROLLED_OUT})
+    private @interface RollingFabState {
+        int ROLLING_OUT = -1;
+        int ROLLING_IN = 0;
+        int ROLLED_OUT = 1;
+        int IDLE = 2;
+    }
+
+
+    public RollingFloatingActionButtonBehavior() {
+        super();
+    }
+
+
+    public RollingFloatingActionButtonBehavior(Context context, AttributeSet attrs) {
+
+    }
+
+    private ViewPropertyAnimatorListener mRollingOutListener = new ViewPropertyAnimatorListenerAdapter() {
+        @Override
+        public void onAnimationStart(View view) {
+            setRollingState(RollingFabState.ROLLING_OUT);
+        }
+
+        @Override
+        public void onAnimationEnd(View view) {
+            setRollingState(RollingFabState.ROLLED_OUT);
+        }
+    };
+
+    private ViewPropertyAnimatorListener mRollingInListener = new ViewPropertyAnimatorListenerAdapter() {
+        @Override
+        public void onAnimationStart(View view) {
+            setRollingState(RollingFabState.ROLLING_IN);
+        }
+
+        @Override
+        public void onAnimationEnd(View view) {
+            mTensionFactor = 0.0f;
+            setRollingState(RollingFabState.IDLE);
+        }
+    };
+
+
+    @Override
+    public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+        return super.layoutDependsOn(parent, child, dependency) || dependency instanceof NestedScrollingChild;
+    }
+
+    @Override
+    public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View directTargetChild, View target, int nestedScrollAxes) {
+        return (nestedScrollAxes &amp;amp; ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
+    }
+
+    @Override
+    public boolean onNestedPreFling(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, float velocityX, float velocityY) {
+        if (Math.abs(velocityY) &amp;lt; Math.abs(velocityX)) return false;
+
+        if (Math.abs(velocityY) &amp;gt;= child.getHeight()) {
+            if (velocityY &amp;lt; 0 &amp;amp;&amp;amp; getRollingFabState() == RollingFabState.ROLLED_OUT) {
+                postRollFabInCompletely(child);
+            } else if (velocityY &amp;gt; 0 &amp;amp;&amp;amp; getRollingFabState() == RollingFabState.IDLE) {
+                postRollFabOutCompletely(child);
+            }
+        }
+        return false;
+    }
+
+    private void postRollFabOutCompletely(final FloatingActionButton fab) {
+        ViewCompat.postOnAnimation(fab, new Runnable() {
+            @Override
+            public void run() {
+                rollOutFabCompletely(fab);
+            }
+        });
+    }
+
+    private void postRollFabInCompletely(final FloatingActionButton fab) {
+        ViewCompat.postOnAnimation(fab, new Runnable() {
+            @Override
+            public void run() {
+                rollInFabCompletely(fab);
+            }
+        });
+    }
+
+    @Override
+    public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dx, int dy, int[] consumed) {
+        if (dy &amp;gt; 0 &amp;amp;&amp;amp; mTotalDy &amp;lt; 0) {
+            mTotalDy = 0;
+            if (mTensionFactor &amp;lt;= 0.5f)
+                rollInFabCompletely(child);
+        } else if (dy &amp;lt; 0 &amp;amp;&amp;amp; mTotalDy &amp;gt; 0) {
+            mTotalDy = 0;
+        }
+
+        mTotalDy += dy;
+        if (mTotalDy &amp;gt;= child.getHeight() &amp;amp;&amp;amp; getRollingFabState() == RollingFabState.IDLE) {
+            float rollBy = (float) (mTotalDy - child.getHeight()) / child.getHeight();
+            rollOutFabBy(child, rollBy);
+        } else if (mTotalDy &amp;lt; -child.getHeight()) {
+            if (getRollingFabState() == RollingFabState.ROLLED_OUT) {
+                rollInFabCompletely(child);
+            } else if (getRollingFabState() == RollingFabState.ROLLING_OUT) {
+                ViewCompat.animate(child).cancel();
+                rollInFabCompletely(child);
+            }
+        }
+    }
+
+    private void rollInFabCompletely(FloatingActionButton child) {
+        ViewCompat.animate(child).translationX(0f).translationY(0f).rotation(0).setDuration(200)
+                .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR).setListener(mRollingInListener).start();
+
+    }
+
+
+    @Override
+    public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target) {
+        if (mTensionFactor &amp;gt;= 0.5)
+            postRollFabOutCompletely(child);
+        else if (mTensionFactor &amp;lt; 0.5 &amp;amp;&amp;amp; getRollingFabState() != RollingFabState.ROLLED_OUT)
+            postRollFabInCompletely(child);
+    }
+
+
+    @Override
+    public boolean onLayoutChild(CoordinatorLayout parent, FloatingActionButton child,
+                                 int layoutDirection) {
+        boolean superLayout = super.onLayoutChild(parent, child, layoutDirection);
+        float center = child.getWidth() / 2;
+        ViewCompat.setPivotX(child, center);
+        ViewCompat.setPivotY(child, center);
+        mOffscreenTranslation = child.getWidth() + child.getWidth() / 2;
+        return superLayout;
+    }
+
+    private void rollOutFabBy(final FloatingActionButton child, float rollBy) {
+        float offScreen = Math.abs(child.getWidth() * rollBy);
+        if (offScreen &amp;lt;= child.getWidth() * TENSION_THRESHOLD) {
+            ViewCompat.setRotation(child, 360 * rollBy);
+            ViewCompat.setTranslationX(child, offScreen);
+            ViewCompat.setTranslationY(child, offScreen);
+            mTensionFlag = true;
+            mTensionFactor = rollBy;
+        } else {
+            mTensionFlag = false;
+            postRollFabOutCompletely(child);
+        }
+    }
+
+
+    private void rollOutFabCompletely(FloatingActionButton child) {
+        ViewCompat.animate(child).translationX(mOffscreenTranslation).translationY(mOffscreenTranslation).rotation(360).setDuration(200).setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR).setListener(mRollingOutListener).start();
+    }
+
+    @Override
+    public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
+        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
+    }
+
+    @Override
+    public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+        if (dependency instanceof Snackbar.SnackbarLayout || dependency instanceof AppBarLayout) {
+            super.onDependentViewChanged(parent, child, dependency);
+        }
+        return false;
+    }
+
+
+    private void setRollingState(@RollingFabState int rollingState) {
+        this.mRollingState = rollingState;
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;用法：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; &amp;lt;android.support.design.widget.FloatingActionButton
+        android:id=&amp;quot;@+id/fab&amp;quot;
+        android:layout_width=&amp;quot;wrap_content&amp;quot;
+        android:layout_height=&amp;quot;wrap_content&amp;quot;
+        android:layout_margin=&amp;quot;@dimen/fab_margin&amp;quot;
+        android:src=&amp;quot;@android:drawable/ic_dialog_email&amp;quot;
+        app:layout_anchorGravity=&amp;quot;bottom|end&amp;quot;
+        app:layout_anchor=&amp;quot;@+id/nested_scrollview&amp;quot;
+        app:layout_behavior=&amp;quot;.view.RollingFloatingActionButtonBehavior&amp;quot; /&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;[1]: &lt;a href=&#34;https://cdn-images-1.medium.com/max/800/1*yQl9PjYWSVrgpmDMbPgwCg.gif&#34;&gt;https://cdn-images-1.medium.com/max/800/1*yQl9PjYWSVrgpmDMbPgwCg.gif&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

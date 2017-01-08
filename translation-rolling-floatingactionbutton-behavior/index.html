@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  	<meta property="og:title" content=" [译]浮动操作按钮（FloatingActionButton）的滚动behavior &middot;  Lowwor&#39;s Blog" />
+  	<meta property="og:site_name" content="Lowwor&#39;s Blog" />
+  	<meta property="og:url" content="http://www.lowwor.com/translation-rolling-floatingactionbutton-behavior/" />
+
+    
+  	<meta property="og:type" content="article" />
+
+    <meta property="og:article:published_time" content="2015-11-24T21:41:57&#43;08:00" />
+
+    
+    <meta property="og:article:tag" content="翻译" />
+    
+    <meta property="og:article:tag" content="Android" />
+    
+    <meta property="og:article:tag" content="FAB" />
+    
+    
+
+  <title>
+     [译]浮动操作按钮（FloatingActionButton）的滚动behavior &middot;  Lowwor&#39;s Blog
+  </title>
+
+    <meta name="description" content="人的一切痛苦，本质上都是源于对自己无能的愤怒。" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="http://www.lowwor.com/images/favicon.ico">
+	  <link rel="apple-touch-icon" href="http://www.lowwor.com/images/apple-touch-icon.png" />
+
+    <link rel="stylesheet" type="text/css" href="http://www.lowwor.com/css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="http://www.lowwor.com/css/nav.css" />
+    <link rel="stylesheet" type="text/css" href="http://www.lowwor.com/css/tomorrow.css" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400|Inconsolata" />
+
+
+    
+        <link href="http://feeds.feedburner.com/..." rel="alternate" type="application/rss+xml" title="Lowwor&#39;s Blog" />
+    
+    <meta name="generator" content="Hugo 0.15" />
+
+    <link rel="canonical" href="http://www.lowwor.com/translation-rolling-floatingactionbutton-behavior/" />
+
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-70800251-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+    
+
+    
+</head>
+<body class="nav-closed">
+
+  <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        
+        
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="http://www.lowwor.com/">HOME</a>
+            </li>
+        
+    </ul>
+    
+    
+    <a class="subscribe-button icon-feed" href="http://feeds.feedburner.com/...">Subscribe</a> </div>
+    
+</div>
+<span class="nav-cover"></span>
+
+
+ <div class="site-wrapper">
+
+
+
+
+<header class="main-header post-head no-cover">
+  <nav class="main-nav clearfix">
+
+
+  
+  
+      <a class="menu-button" href="#"><span class="burger">&#9776;</span><span class="word">Menu</span></a>
+  
+  </nav>
+</header>
+
+
+
+<main class="content" role="main">
+
+
+
+
+  <article class="post post">
+
+    <header class="post-header">
+        <h1 class="post-title">[译]浮动操作按钮（FloatingActionButton）的滚动behavior</h1>
+        <small></small>
+
+        <section class="post-meta">
+        
+          <time class="post-date" datetime="2015-11-24T21:41:57&#43;08:00">
+            Nov 24, 2015
+          </time>
+        
+         
+          <span class="post-tag small"><a href="http://www.lowwor.com/tags/%E7%BF%BB%E8%AF%91/">#翻译</a></span>
+         
+          <span class="post-tag small"><a href="http://www.lowwor.com/tags/android/">#Android</a></span>
+         
+          <span class="post-tag small"><a href="http://www.lowwor.com/tags/fab/">#FAB</a></span>
+         
+        </section>
+    </header>
+
+    <section class="post-content">
+      
+
+<blockquote>
+<p>原文链接 : <a href="https://medium.com/@nullthemall/rolling-floatingactionbutton-behavior-d86fb797a1e#.7esf5u4xo">Rolling FloatingActionButton Behavior</a>
+作者 :    Nikola Despotoski</p>
+</blockquote>
+
+<p>平常，我喜欢上materialup.com去看看有没有什么新的内容，或者用Material guideline里的关键字来搜索看相关的内容。几天前，我看到了这张图里的效果:
+![A rolling fab, freaking lolz.][1]</p>
+
+<h2 id="滚动进入效果:64c6e42ea9dd63f69d1ed94d19aa1c77">滚动进入效果</h2>
+
+<p>为了保证SnackBar的behavior仍然有效，我们要在原有的FloatinghActionButton.Behavior基础上实现rolling behavior。
+只有在继承了nested scrolling动作的view滑动时，我们才需要滚动FAB：</p>
+
+<pre><code>@Override
+public boolean layoutDependsOn(....View dependency) {
+    return super.layoutDependsOn(parent, child, dependency) || dependency instanceof NestedScrollingChild;
+}
+
+@Override
+public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, ..., int nestedScrollAxes) {
+    return (nestedScrollAxes &amp; ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
+</code></pre>
+
+<p>当界面滑动的距离差不多是FAB的高度时，我们让FAB开始滚动离开
+使拉力（tension）的阀值在0.5f，用来控制FAB是否完全滚动离开。
+当我们向下滑动的时候，让FAB开始滚动进入。</p>
+
+<pre><code>@Override
+public void onNestedPreScroll(... FloatingActionButton child... int dx, int dy, ..) {
+    if (dy &gt; 0 &amp;&amp; mTotalDy &lt; 0) {
+        mTotalDy = 0;
+        if (mTensionFactor &lt;= 0.5f)
+            rollInFabCompletely(child);
+    } else if (dy &lt; 0 &amp;&amp; mTotalDy &gt; 0) {
+        mTotalDy = 0;
+    }
+
+    mTotalDy += dy;
+    if (mTotalDy &gt;= child.getHeight() &amp;&amp; getRollingFabState() == IDLE) {
+        float rollBy = (float) (mTotalDy - child.getHeight()) / child.getHeight();
+        rollOutFabBy(child, rollBy);
+    } else if (mTotalDy &lt; -child.getHeight()) {
+        if (getRollingFabState() ==   RollingFabState.ROLLED_OUT) {
+            rollInFabCompletely(child);
+        } else if (getRollingFabState() ==   RollingFabState.ROLLING_OUT) {
+            ViewCompat.animate(child).cancel();
+            rollInFabCompletely(child);
+        }
+    }
+}
+</code></pre>
+
+<p>如果滑动的距离没够，利用拉力（Tension）来使FAB恢复原来的位置和旋转角度。</p>
+
+<pre><code>@Override
+public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target) {
+ if (mTensionFactor &gt;= 0.5)
+    postRollFabOutCompletely(child);
+else if (mTensionFactor &lt; 0.5 &amp;&amp; getRollingFabState() !=   RollingFabState.ROLLED_OUT)
+    postRollFabInCompletely(child);
+}
+</code></pre>
+
+<p>代码如下：
+RollingFloatingActionButtonBehavior.java</p>
+
+<pre><code>package samples.despotoski.nikola.com.appbarlayoutsample.view;
+
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
+import android.support.annotation.IntDef;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.view.NestedScrollingChild;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
+import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.animation.Interpolator;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/**
+ * Created by Nikola D. on 11/17/2015.
+ */
+public class RollingFloatingActionButtonBehavior extends FloatingActionButton.Behavior {
+    private static final Interpolator FAST_OUT_SLOW_IN_INTERPOLATOR = new FastOutLinearInInterpolator();
+    private static final float TENSION_THRESHOLD = 0.5f;
+    private int mTotalDy;
+
+
+    private int mRollingState = RollingFabState.IDLE;
+    private boolean mTensionFlag = false;
+    private int mOffscreenTranslation;
+    private float mTensionFactor = 0f;
+    private long mTimeInitial;
+    private float mCurrentSpeed;
+    private static final float VELOCITY_THRESHOLD = 100;
+
+    public int getRollingFabState() {
+        return mRollingState;
+    }
+
+
+    @IntDef({RollingFabState.IDLE, RollingFabState.ROLLING_OUT, RollingFabState.ROLLING_IN, RollingFabState.ROLLED_OUT})
+    private @interface RollingFabState {
+        int ROLLING_OUT = -1;
+        int ROLLING_IN = 0;
+        int ROLLED_OUT = 1;
+        int IDLE = 2;
+    }
+
+
+    public RollingFloatingActionButtonBehavior() {
+        super();
+    }
+
+
+    public RollingFloatingActionButtonBehavior(Context context, AttributeSet attrs) {
+
+    }
+
+    private ViewPropertyAnimatorListener mRollingOutListener = new ViewPropertyAnimatorListenerAdapter() {
+        @Override
+        public void onAnimationStart(View view) {
+            setRollingState(RollingFabState.ROLLING_OUT);
+        }
+
+        @Override
+        public void onAnimationEnd(View view) {
+            setRollingState(RollingFabState.ROLLED_OUT);
+        }
+    };
+
+    private ViewPropertyAnimatorListener mRollingInListener = new ViewPropertyAnimatorListenerAdapter() {
+        @Override
+        public void onAnimationStart(View view) {
+            setRollingState(RollingFabState.ROLLING_IN);
+        }
+
+        @Override
+        public void onAnimationEnd(View view) {
+            mTensionFactor = 0.0f;
+            setRollingState(RollingFabState.IDLE);
+        }
+    };
+
+
+    @Override
+    public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+        return super.layoutDependsOn(parent, child, dependency) || dependency instanceof NestedScrollingChild;
+    }
+
+    @Override
+    public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View directTargetChild, View target, int nestedScrollAxes) {
+        return (nestedScrollAxes &amp; ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
+    }
+
+    @Override
+    public boolean onNestedPreFling(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, float velocityX, float velocityY) {
+        if (Math.abs(velocityY) &lt; Math.abs(velocityX)) return false;
+
+        if (Math.abs(velocityY) &gt;= child.getHeight()) {
+            if (velocityY &lt; 0 &amp;&amp; getRollingFabState() == RollingFabState.ROLLED_OUT) {
+                postRollFabInCompletely(child);
+            } else if (velocityY &gt; 0 &amp;&amp; getRollingFabState() == RollingFabState.IDLE) {
+                postRollFabOutCompletely(child);
+            }
+        }
+        return false;
+    }
+
+    private void postRollFabOutCompletely(final FloatingActionButton fab) {
+        ViewCompat.postOnAnimation(fab, new Runnable() {
+            @Override
+            public void run() {
+                rollOutFabCompletely(fab);
+            }
+        });
+    }
+
+    private void postRollFabInCompletely(final FloatingActionButton fab) {
+        ViewCompat.postOnAnimation(fab, new Runnable() {
+            @Override
+            public void run() {
+                rollInFabCompletely(fab);
+            }
+        });
+    }
+
+    @Override
+    public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dx, int dy, int[] consumed) {
+        if (dy &gt; 0 &amp;&amp; mTotalDy &lt; 0) {
+            mTotalDy = 0;
+            if (mTensionFactor &lt;= 0.5f)
+                rollInFabCompletely(child);
+        } else if (dy &lt; 0 &amp;&amp; mTotalDy &gt; 0) {
+            mTotalDy = 0;
+        }
+
+        mTotalDy += dy;
+        if (mTotalDy &gt;= child.getHeight() &amp;&amp; getRollingFabState() == RollingFabState.IDLE) {
+            float rollBy = (float) (mTotalDy - child.getHeight()) / child.getHeight();
+            rollOutFabBy(child, rollBy);
+        } else if (mTotalDy &lt; -child.getHeight()) {
+            if (getRollingFabState() == RollingFabState.ROLLED_OUT) {
+                rollInFabCompletely(child);
+            } else if (getRollingFabState() == RollingFabState.ROLLING_OUT) {
+                ViewCompat.animate(child).cancel();
+                rollInFabCompletely(child);
+            }
+        }
+    }
+
+    private void rollInFabCompletely(FloatingActionButton child) {
+        ViewCompat.animate(child).translationX(0f).translationY(0f).rotation(0).setDuration(200)
+                .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR).setListener(mRollingInListener).start();
+
+    }
+
+
+    @Override
+    public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target) {
+        if (mTensionFactor &gt;= 0.5)
+            postRollFabOutCompletely(child);
+        else if (mTensionFactor &lt; 0.5 &amp;&amp; getRollingFabState() != RollingFabState.ROLLED_OUT)
+            postRollFabInCompletely(child);
+    }
+
+
+    @Override
+    public boolean onLayoutChild(CoordinatorLayout parent, FloatingActionButton child,
+                                 int layoutDirection) {
+        boolean superLayout = super.onLayoutChild(parent, child, layoutDirection);
+        float center = child.getWidth() / 2;
+        ViewCompat.setPivotX(child, center);
+        ViewCompat.setPivotY(child, center);
+        mOffscreenTranslation = child.getWidth() + child.getWidth() / 2;
+        return superLayout;
+    }
+
+    private void rollOutFabBy(final FloatingActionButton child, float rollBy) {
+        float offScreen = Math.abs(child.getWidth() * rollBy);
+        if (offScreen &lt;= child.getWidth() * TENSION_THRESHOLD) {
+            ViewCompat.setRotation(child, 360 * rollBy);
+            ViewCompat.setTranslationX(child, offScreen);
+            ViewCompat.setTranslationY(child, offScreen);
+            mTensionFlag = true;
+            mTensionFactor = rollBy;
+        } else {
+            mTensionFlag = false;
+            postRollFabOutCompletely(child);
+        }
+    }
+
+
+    private void rollOutFabCompletely(FloatingActionButton child) {
+        ViewCompat.animate(child).translationX(mOffscreenTranslation).translationY(mOffscreenTranslation).rotation(360).setDuration(200).setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR).setListener(mRollingOutListener).start();
+    }
+
+    @Override
+    public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
+        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
+    }
+
+    @Override
+    public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+        if (dependency instanceof Snackbar.SnackbarLayout || dependency instanceof AppBarLayout) {
+            super.onDependentViewChanged(parent, child, dependency);
+        }
+        return false;
+    }
+
+
+    private void setRollingState(@RollingFabState int rollingState) {
+        this.mRollingState = rollingState;
+    }
+
+}
+</code></pre>
+
+<p>用法：</p>
+
+<pre><code> &lt;android.support.design.widget.FloatingActionButton
+        android:id=&quot;@+id/fab&quot;
+        android:layout_width=&quot;wrap_content&quot;
+        android:layout_height=&quot;wrap_content&quot;
+        android:layout_margin=&quot;@dimen/fab_margin&quot;
+        android:src=&quot;@android:drawable/ic_dialog_email&quot;
+        app:layout_anchorGravity=&quot;bottom|end&quot;
+        app:layout_anchor=&quot;@+id/nested_scrollview&quot;
+        app:layout_behavior=&quot;.view.RollingFloatingActionButtonBehavior&quot; /&gt;
+</code></pre>
+
+<p>[1]: <a href="https://cdn-images-1.medium.com/max/800/1*yQl9PjYWSVrgpmDMbPgwCg.gif">https://cdn-images-1.medium.com/max/800/1*yQl9PjYWSVrgpmDMbPgwCg.gif</a></p>
+
+    </section>
+
+
+  <footer class="post-footer">
+
+
+    
+
+    
+
+
+
+
+
+<section class="author">
+  <h4><a href="http://www.lowwor.com/">Lowwor</a></h4>
+  
+  <p>I am a Android developer.</p>
+  
+  <div class="author-meta">
+    <span class="author-location icon-location">Guangdong, China</span>
+    <span class="author-link icon-link"><a href="http://www.lowwor.com">http://www.lowwor.com</a></span>
+  </div>
+</section>
+
+
+
+    
+<section class="share">
+  <h4>Share this post</h4>
+  <a class="icon-twitter" style="font-size: 1.4em" href="https://twitter.com/share?text=%5b%e8%af%91%5d%e6%b5%ae%e5%8a%a8%e6%93%8d%e4%bd%9c%e6%8c%89%e9%92%ae%ef%bc%88FloatingActionButton%ef%bc%89%e7%9a%84%e6%bb%9a%e5%8a%a8behavior&amp;url=http%3a%2f%2fwww.lowwor.com%2ftranslation-rolling-floatingactionbutton-behavior%2f"
+      onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+      <span class="hidden">Twitter</span>
+  </a>
+  <a class="icon-facebook" style="font-size: 1.4em" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fwww.lowwor.com%2ftranslation-rolling-floatingactionbutton-behavior%2f"
+      onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+      <span class="hidden">Facebook</span>
+  </a>
+  <a class="icon-pinterest" style="font-size: 1.4em" href="http://pinterest.com/pin/create/button/?url=http%3a%2f%2fwww.lowwor.com%2ftranslation-rolling-floatingactionbutton-behavior%2f&amp;description=%5b%e8%af%91%5d%e6%b5%ae%e5%8a%a8%e6%93%8d%e4%bd%9c%e6%8c%89%e9%92%ae%ef%bc%88FloatingActionButton%ef%bc%89%e7%9a%84%e6%bb%9a%e5%8a%a8behavior"
+      onclick="window.open(this.href, 'pinterest-share','width=580,height=296');return false;">
+      <span class="hidden">Pinterest</span>
+  </a>
+  <a class="icon-google-plus" style="font-size: 1.4em" href="https://plus.google.com/share?url=http%3a%2f%2fwww.lowwor.com%2ftranslation-rolling-floatingactionbutton-behavior%2f"
+     onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+      <span class="hidden">Google+</span>
+  </a>
+</section>
+
+
+
+    
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_shortname = 'lowwor';
+  var disqus_url = 'http:\/\/www.lowwor.com\/translation-rolling-floatingactionbutton-behavior\/';
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+  </footer>
+</article>
+
+</main>
+    <footer class="site-footer clearfix">
+        <section class="copyright"><a href="">Lowwor&#39;s Blog</a> All rights reserved - 2016</section>
+        
+        <section class="poweredby">Proudly generated by <a class="icon-hugo" href="http://gohugo.io">HUGO</a>, with Rowwol theme modified from <a class="icon-theme" href="https://github.com/vjeantet/hugo-theme-casper">Casper</a></section>
+        
+    </footer>
+    </div>
+    <script type="text/javascript" src="http://www.lowwor.com/js/jquery.js"></script>
+    <script type="text/javascript" src="http://www.lowwor.com/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="http://www.lowwor.com/js/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+</body>
+</html>
+
