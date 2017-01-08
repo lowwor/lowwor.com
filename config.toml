@@ -1,4 +1,4 @@
-BaseUrl= "http://lowwor.com/"
+BaseUrl= "http://www.lowwor.com/"
 LanguageCode= "zh-CN"
 Title= "Lowwor's Blog"
 paginate = 5
@@ -11,7 +11,7 @@ canonifyurls = true
   cover = "images/cover.jpg"
   author = "Lowwor"
   authorlocation = "Guangdong, China"
-  authorwebsite = "http://lowwor.com"
+  authorwebsite = "http://www.lowwor.com"
   bio= "I am a Android developer."
   #logo = "images/logo.png"
   googleAnalyticsUserID = "UA-70800251-1"
