@@ -1,1 +1,15 @@
-/public
+# Project dependencies
+# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
+node_modules
+.cache/
+# Build directory
+public/
+.DS_Store
+yarn-error.log
+
+# Local keys
+.env.development
+
+# Calpa's Blog Config
+data/template/config.json
+data/template/raw-config.js
