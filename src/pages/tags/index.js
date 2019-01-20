@@ -159,13 +159,13 @@ class TagPage extends Component {
 
         <div className={tagCenter}>
           <h2 style={{ ...style, justifyContent: 'space-between' }}>
-            最熱門標籤：
+            最热门标签：
             <button
               type="button"
               className="btn btn-info"
               onClick={() => this.toggleAllTags()}
             >
-              展示所有標籤
+              展示所有标签
             </button>
           </h2>
 

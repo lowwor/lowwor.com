@@ -50,7 +50,7 @@ module.exports = ({ graphql, boundActionCreators }) => {
       posts.map(({ node }, index) => {
         const { createdDate, url } = node;
         const date = dayjs(createdDate).format('YYYY/MM/DD');
-        const postPath = url === 'about' ? url : `${date}/${url}`;
+        const postPath = url === 'about' ? url : `${url}`;
         return createPage({
           path: postPath,
           component: path.resolve('./src/templates/blog-post.js'),

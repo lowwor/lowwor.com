@@ -13,9 +13,9 @@ import ShareBox from '../components/ShareBox';
 
 const getTitle = (pageNumber = '1') => {
   if (pageNumber === '1') {
-    return '首頁';
+    return '首页';
   }
-  return `第 ${pageNumber} 頁`;
+  return `第 ${pageNumber} 页`;
 };
 
 const Page = ({ data, location }) => (
@@ -58,9 +58,9 @@ const Page = ({ data, location }) => (
     <SEO
       title={getTitle(location.pathname.split('/')[2])}
       url={getPath()}
-      description="Calpa's Blog"
+      description="Lowwor's Blog"
       image="https://i.imgur.com/kjt2x52.png"
-      siteTitleAlt="Calpa's Blog"
+      siteTitleAlt="Lowwor's Blog"
       isPost={false}
     />
   </div>

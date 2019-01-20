@@ -63,7 +63,7 @@ class BlogPost extends Component {
 
     let finalTitle = title;
     if (dayjs(createdDate).isAfter(issueDate)) {
-      finalTitle = `${title} | Calpa's Blog`; // For Create Github Issue
+      finalTitle = `${title} | Lowwor's Blog`; // For Create Github Issue
 
       if (dayjs(createdDate).isBefore(idDate)) {
         id = md5(title);
@@ -93,8 +93,6 @@ class BlogPost extends Component {
       id,
       toc,
       tags,
-      jueJinLikeIconLink,
-      jueJinPostLink,
     } = node;
 
     const { totalCount, edges } = this.data.latestPosts;
@@ -120,23 +118,21 @@ class BlogPost extends Component {
           authorName={name}
           authorImage={iconUrl}
           subTitle={parseChineseDate(createdDate)}
-          jueJinLikeIconLink={jueJinLikeIconLink}
-          jueJinPostLink={jueJinPostLink}
         />
         <Sidebar totalCount={totalCount} posts={edges} post />
         <div className="col-lg-6 col-md-12 col-sm-12 order-10 d-flex flex-column content">
           <Content post={content} uuid={id} title={title} />
 
           <div className="m-message" style={bgWhite}>
-            如果你覺得我的文章對你有幫助的話，希望可以推薦和交流一下。歡迎
+            如果你觉得我的文章對你有帮助的話，希望可以推荐和交流一下。欢迎
             <ExternalLink
-              href="https://github.com/calpa/gatsby-starter-calpa-blog"
-              title="關注和 Star 本博客"
+              href="https://github.com/lowwor/lowwor.com"
+              title="关注和 Star 本博客"
             />
             或者
             <ExternalLink
-              href="https://github.com/calpa/"
-              title="關注我的 Github"
+              href="https://github.com/lowwor/"
+              title="关注我的 Github"
             />
             。
           </div>
@@ -164,7 +160,7 @@ class BlogPost extends Component {
           url={getPath()}
           description={getFirstParagraph(content)}
           image={image}
-          siteTitleAlt="Calpa's Blog"
+          siteTitleAlt="Lowwor's Blog"
           isPost={false}
         />
       </div>
@@ -203,8 +199,6 @@ export const pageQuery = graphql`
           headerImgur
           toc
           tags
-          jueJinLikeIconLink
-          jueJinPostLink
         }
         previous {
           ...postLink

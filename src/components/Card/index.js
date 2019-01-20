@@ -30,7 +30,7 @@ const Card = ({
   content,
   tags,
 }) => {
-  const postUrl = parseUrl(date, url);
+  const postUrl = parseUrl(url);
   const finalTags = tags.split(', ');
 
   return (
@@ -54,7 +54,7 @@ const Card = ({
             </Link>
             <p className="d-none d-md-block">{content}</p>
             <Link to={postUrl} href={postUrl}>
-              ....繼續閱讀全文內容
+              ....继续阅读全文内容
             </Link>
           </div>
         </div>

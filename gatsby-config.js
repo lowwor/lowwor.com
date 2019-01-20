@@ -23,10 +23,10 @@ const extractData = (site, edge) => {
 module.exports = {
   pathPrefix: '/',
   siteMetadata: {
-    title: 'Calpa&apos;s Blog',
-    description: 'Front End Technical Blog - Calpa',
-    siteUrl: 'https://calpa.me',
-    author: 'Calpa',
+    title: 'Lowwor&apos;s Blog',
+    description: 'Personal Blog - Lowwor',
+    siteUrl: 'https://lowwor.com',
+    author: 'Lowwor',
   },
   plugins: [
     'gatsby-plugin-react-helmet',
@@ -90,8 +90,8 @@ module.exports = {
     {
       resolve: 'gatsby-plugin-manifest',
       options: {
-        name: "Calpa's Blog",
-        short_name: 'Calpa',
+        name: "Lowwor's Blog",
+        short_name: 'Lowwor',
         start_url: '/',
         background_color: '#ededed',
         theme_color: '#384f7c',

@@ -15,11 +15,11 @@ const gotoPage = async (url, show = false) => {
 
 const parseMarkdownUrl = (date, rawUrl) => `/${date}/${rawUrl.match(/_posts[/](.*).md/)[1]}/`;
 
-const parseUrl = (date, rawUrl) => {
+const parseUrl = (rawUrl) => {
   if (rawUrl === 'about') {
-    return '/about/';
+    return '/about-lowwor/';
   }
-  return `/${date}/${rawUrl}/`;
+  return `/${rawUrl}/`;
 };
 
 const minusOnePage = (currentPage) => {

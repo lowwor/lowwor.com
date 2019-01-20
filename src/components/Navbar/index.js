@@ -33,7 +33,7 @@ const Navbar = () => (
           gotoPage('/');
         }}
       >
-        <span className="brand-logo">Calpa</span>
+        <span className="brand-logo">Lowwor</span>
         &apos;s Blog
       </button>
       <button
@@ -44,7 +44,7 @@ const Navbar = () => (
       >
         <FontAwesomeIcon icon={faBars} />
       </button>
-      <GithubCorner url="https://github.com/calpa/gatsby-starter-calpa-blog" />
+      <GithubCorner url="https://github.com/lowwor/lowwor.com" />
       <div
         className="collapse navbar-collapse flex-row-reverse"
         id="navbarSupportedContent"

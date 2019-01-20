@@ -7,7 +7,7 @@ import { parseUrl } from '../../../api/url';
 
 import './index.scss';
 
-const getUrl = (createdDate, url) => parseUrl(parseDate(createdDate), url);
+const getUrl = (createdDate, url) => parseUrl(url);
 
 const LatestPost = ({ posts }) => (
   <div className="latest-post">

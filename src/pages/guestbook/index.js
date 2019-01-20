@@ -63,7 +63,7 @@ class Guestbook extends Component {
           url={getPath()}
           description={description}
           image={image}
-          siteTitleAlt="Calpa's Blog"
+          siteTitleAlt="Lowwor's Blog"
           isPost={false}
         />
       </div>
