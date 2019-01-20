@@ -7,6 +7,9 @@
 const getDefaultPicture = () => 'M795H8A.jpg';
 
 const parseImgur = (rawImage, size = 'large') => {
+  if (!rawImage.match('imgur')) {
+    return rawImage;
+  }
   let subfix = '';
   const image = rawImage || getDefaultPicture();
 
