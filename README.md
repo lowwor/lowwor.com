@@ -5,3 +5,7 @@
 [![Greenkeeper badge](https://badges.greenkeeper.io/lowwor/lowwor.com.svg)](https://greenkeeper.io/)
 [![Build Status](https://api.travis-ci.org/lowwor/lowwor.com.svg?branch=master)](https://github.com/lowwor/lowwor.com/blob/master/.travis.yml)
 [![CodeFactor](https://www.codefactor.io/repository/github/lowwor/lowwor.com/badge)](https://www.codefactor.io/repository/github/lowwor/lowwor.com)
+
+Previous blog was built with Hugo and deployed by wercker(branch: old-hugo-wercker).
+
+Current blog was built with GatsbyJS and React and hosted on Netlify.
