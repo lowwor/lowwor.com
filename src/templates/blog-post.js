@@ -62,17 +62,17 @@ class BlogPost extends Component {
     let { id } = this.data.content.edges[0].node;
 
     let finalTitle = title;
-    if (dayjs(createdDate).isAfter(issueDate)) {
-      finalTitle = `${title} | Lowwor's Blog`; // For Create Github Issue
+    // if (dayjs(createdDate).isAfter(issueDate)) {
+    finalTitle = `${title} | Lowwor's Blog`; // For Create Github Issue
 
-      if (dayjs(createdDate).isBefore(idDate)) {
-        id = md5(title);
-      }
-    } else {
-      const pathname = getPath();
-      const lastSymbol = pathname[pathname.length - 1] === '/' ? '' : '/';
-      id = `${url}${pathname}${lastSymbol}`;
-    }
+    // if (dayjs(createdDate).isBefore(idDate)) {
+    id = md5(title);
+    // }
+    // } else {
+    //   const pathname = getPath();
+    //   const lastSymbol = pathname[pathname.length - 1] === '/' ? '' : '/';
+    //   id = `${url}${pathname}${lastSymbol}`;
+    // }
 
     const GitTalkInstance = new Gitalk({
       ...gitalk,
