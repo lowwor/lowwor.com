@@ -93,7 +93,7 @@
     "stylelint-scss": "^3.4.0",
     "@storybook/react": "^4.0.2",
     "@storybook/addon-actions": "^5.0.0",
-    "@storybook/addon-links": "^4.0.2",
+    "@storybook/addon-links": "^5.0.0",
     "@storybook/addons": "^5.0.0",
     "@babel/core": "^7.1.2"
   },
