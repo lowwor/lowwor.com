@@ -5,9 +5,12 @@ import PropTypes from 'prop-types';
 import Friend from '../Friend';
 import LatestPost from '../LatestPost';
 import './index.scss';
+import Donation from '../Donation';
 
 const Information = ({ totalCount, posts }) => (
   <div className="d-none d-lg-block information my-2">
+    <hr />
+    <Donation />
     <hr />
     <p>共{totalCount}篇文章</p>
     <hr />
