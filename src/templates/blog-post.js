@@ -5,37 +5,27 @@
 import React, { Component } from 'react';
 import { graphql } from 'gatsby';
 
-import md5 from 'md5';
-import dayjs from 'dayjs';
-
 import 'gitalk/dist/gitalk.css';
 
-import { parseChineseDate, getPath } from '../api';
-import { getFirstParagraph } from '../api/text';
-import { parseImgur } from '../api/images';
+import { parseChineseDate } from '../api';
 
 import ExternalLink from '../components/ExternalLink';
 import Sidebar from '../components/Sidebar';
 import Content from '../components/Content';
 import SEO from '../components/SEO';
 
-import TableOfContent from '../components/TableOfContent';
 import Header from '../components/Header';
-
+// import TableOfContent from '../components/TableOfContent';
 import ShareBox from '../components/ShareBox';
-
-import { getUrl } from '../api/url';
 
 import { config } from '../../data';
 
 // Styles
 import './blog-post.scss';
 
-const {
-  url, name, iconUrl, gitalk,
-} = config;
+const { name, iconUrl, gitalk } = config;
 
-const bgWhite = { padding: '10px 15px', background: 'white' };
+const bgWhite = { padding: '10px 30px', background: 'white' };
 
 // Prevent webpack window problem
 const isBrowser = typeof window !== 'undefined';
@@ -48,81 +38,40 @@ class BlogPost extends Component {
   }
 
   componentDidMount() {
-    // Gitalk
-    // Due to Github Issue tags length is limited,
-    // Then we need to hack the id
-
-    // 一開始的時候是直接調用 document.title 作為 id
-    // 不過在 2018年 3月 1日 Github 有標籤字數限制
-    // 2018年 9月 9日後直接使用 id
-
-    const issueDate = '2018-03-01';
-    const idDate = '2018-09-09'; // 修理遺留代碼錯誤
-    const { createdDate, title } = this.data.content.edges[0].node;
-    let { id } = this.data.content.edges[0].node;
-
-    let finalTitle = title;
-    // if (dayjs(createdDate).isAfter(issueDate)) {
-    finalTitle = `${title} | Lowwor's Blog`; // For Create Github Issue
-
-    // if (dayjs(createdDate).isBefore(idDate)) {
-    id = md5(title);
-    // }
-    // } else {
-    //   const pathname = getPath();
-    //   const lastSymbol = pathname[pathname.length - 1] === '/' ? '' : '/';
-    //   id = `${url}${pathname}${lastSymbol}`;
-    // }
+    const { frontmatter, id: graphqlId } = this.data.content.edges[0].node;
+    const { title, id } = frontmatter;
 
     const GitTalkInstance = new Gitalk({
       ...gitalk,
-      title: finalTitle,
-      id,
+      title,
+      id: id || graphqlId,
     });
     GitTalkInstance.render('gitalk-container');
   }
 
   render() {
-    const { previous, node, next } = this.data.content.edges[0];
+    const { node } = this.data.content.edges[0];
 
     const {
-      title,
-      headerImgur,
-      createdDate,
-      content,
-      id,
-      toc,
-      tags,
+      html, frontmatter, fields, excerpt,
     } = node;
 
-    const { totalCount, edges } = this.data.latestPosts;
+    const { slug } = fields;
 
-    let finalTags = [];
-    if (tags) {
-      finalTags = tags.split(',').map((item) => {
-        if (item) {
-          return item.trim();
-        }
-        return '';
-      });
-    }
-    const image = parseImgur(headerImgur, 'large');
-    const header = parseImgur(headerImgur, 'header');
+    const { date, headerImage, title } = frontmatter;
 
     return (
       <div className="row post order-2">
         <Header
-          img={header}
+          img={headerImage || 'https://i.imgur.com/M795H8A.jpg'}
           title={title}
-          tags={finalTags}
           authorName={name}
           authorImage={iconUrl}
-          subTitle={parseChineseDate(createdDate)}
+          subTitle={parseChineseDate(date)}
         />
-        <Sidebar totalCount={totalCount} posts={edges} post />
-        <div className="col-lg-6 col-md-12 col-sm-12 order-10 d-flex flex-column content">
-          <Content post={content} uuid={id} title={title} />
-
+        <Sidebar />
+        <div className="col-xl-7 col-lg-6 col-md-12 col-sm-12 order-10 content">
+          <Content post={html} />
           <div className="m-message" style={bgWhite}>
             如果你觉得我的文章對你有帮助的話，希望可以推荐和交流一下。欢迎
             <ExternalLink
@@ -137,31 +86,18 @@ class BlogPost extends Component {
             。
           </div>
 
-          <div className="m-change-page" style={bgWhite}>
-            <p>更多文章：</p>
-            {previous && (
-              <p>
-                <a href={getUrl(previous)}>{previous.title}</a>
-              </p>
-            )}
-            {next && (
-              <p>
-                <a href={getUrl(next)}>{next.title}</a>
-              </p>
-            )}
-          </div>
+          <div id="gitalk-container" />
         </div>
 
-        <ShareBox url={url + getUrl(node)} />
-        <TableOfContent toc={toc} />
-        <div id="gitalk-container" className="col-sm-8 col-12 order-12" />
+        <ShareBox url={slug} />
+
         <SEO
           title={title}
-          url={getPath()}
-          description={getFirstParagraph(content)}
-          image={image}
+          url={slug}
           siteTitleAlt="Lowwor's Blog"
           isPost={false}
+          description={excerpt}
+          image={headerImage || 'https://i.imgur.com/M795H8A.jpg'}
         />
       </div>
     );
@@ -169,51 +105,42 @@ class BlogPost extends Component {
 }
 
 export const pageQuery = graphql`
-  fragment post on PostMarkdownConnection {
-    edges {
-      node {
-        id
-        title
-        url
-        createdDate
-      }
+  fragment post on MarkdownRemark {
+    fields {
+      slug
     }
-  }
-
-  fragment postLink on PostMarkdown {
-    title
-    url
-    createdDate
+    frontmatter {
+      id
+      title
+      slug
+      date
+      headerImage
+    }
   }
 
   query BlogPostQuery($index: Int) {
-    content: allPostMarkdown(
-      sort: { fields: createdDate, order: DESC }
-      limit: 1
+    content: allMarkdownRemark(
+      sort: { order: DESC, fields: frontmatter___date }
       skip: $index
+      limit: 1
     ) {
-      ...post
       edges {
         node {
-          content: html
-          headerImgur
-          toc
-          tags
+          id
+          html
+          tableOfContents
+          excerpt
+          ...post
         }
+
         previous {
-          ...postLink
+          ...post
         }
+
         next {
-          ...postLink
+          ...post
         }
       }
-    }
-    latestPosts: allPostMarkdown(
-      limit: 6
-      sort: { fields: [createdDate], order: DESC }
-    ) {
-      totalCount
-      ...post
     }
   }
 `;

@@ -1,0 +1,60 @@
+{
+  "url": "https://lowwor.com",
+  "meta": {
+    "favicon": "https://i.loli.net/2019/09/15/5q1kgNKI3UiQWO7.jpg",
+    "keyword": "lowwor, blog",
+    "description": "Lowwor 的博客",
+    "theme_color": "#384f7c",
+    "google_site_verification": ""
+  },
+  "name": "lowwor",
+  "about": "/about-lowwor/",
+  "email": "lowwor@foxmail.com",
+  "stats": {
+    "image": "https://i.imgur.com/VjBWiSt.png",
+    "title": "過去三十日數據",
+    "description": "過去三十日數據"
+  },
+  "title": "Lowwor 的博客",
+  "gitalk": {
+    "repo": "lowwor.com",
+    "admin": [
+      "lowwor"
+    ],
+    "owner": "lowwor",
+    "clientID": "4d9f01b36f0926efd321",
+    "clientSecret": "a783b311f0974b23cd45e9da73eac065396aa4b2",
+    "distractionFreeMode": true
+  },
+  "License": "by",
+  "friends": [],
+  "lightningUrl": "https://lnd.hoo.com/api/generate?openid=Uv9n9gP5dKdemdCS1npT&isimg=1",
+  "iconUrl": "https://i.loli.net/2019/09/16/9ewx2PJA14GgMrm.jpg",
+  "wordings": [
+    "解决问题工程师"
+  ],
+  "gaTrackId": "UA-70800251-1",
+  "navbarList": [
+    {
+      "href": "/tags/",
+      "title": "标签"
+    },
+    {
+      "href": "/guestbook/",
+      "title": "留言簿"
+    },
+    {
+      "href": "/about-lowwor/",
+      "title": "关于作者"
+    }
+  ],
+  "redirectors": [
+    {
+      "toPath": "/page/1/",
+      "fromPath": "/"
+    }
+  ],
+  "gaOptimizeId": "GTM-KJKMW9T",
+  "githubUsername": "lowwor",
+  "maxPostsInPage": 10
+}

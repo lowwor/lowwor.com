@@ -1,66 +1,101 @@
 const path = require('path');
-const dayjs = require('dayjs');
-const { config } = require('../data');
+const createPaginatedPages = require('gatsby-paginate');
 
-const { redirectors = [], maxPostsInPage } = config;
+module.exports = ({ actions, graphql }) => {
+  const { createPage } = actions;
 
-module.exports = ({ graphql, boundActionCreators }) => {
-  const { createPage, createRedirect } = boundActionCreators;
-
-  redirectors.forEach(({ fromPath, toPath = '/' }) => {
-    createRedirect({ fromPath, redirectInBrowser: true, toPath });
-    // Uncomment next line to see forEach in action during build
-    console.log(`Redirecting: ${fromPath} To: ${toPath}`);
-  });
-
-  return new Promise((resolve, reject) => {
-    graphql(`
-      {
-        allPostMarkdown(sort: { fields: [createdDate], order: DESC }) {
-          edges {
-            node {
-              title
-              createdDate
+  return graphql(`
+    {
+      allMarkdownRemark(
+        limit: 1000
+        sort: { order: DESC, fields: frontmatter___date }
+      ) {
+        edges {
+          node {
+            id
+            fields {
+              slug
+            }
+            frontmatter {
+              tags
+              templateKey
+              slug
               id
-              url
+              title
+              url: slug
+              date
+              tags
+              description
+              headerImage
             }
           }
         }
       }
-    `).then((result) => {
-      if (result.error) {
-        console.error(result.error);
-        return reject();
-      }
-      const posts = result.data.allPostMarkdown.edges;
-      const pages = Math.ceil(posts.length / maxPostsInPage);
+    }
+  `).then((result) => {
+    if (result.errors) {
+      return Promise.reject(result.errors);
+    }
 
-      for (let index = 0; index < pages; index += 1) {
-        createPage({
-          path: `page/${index + 1}`,
-          component: path.resolve('./src/templates/page.js'),
-          context: {
-            // Data passed to context is available in page queries as GraphQL variables.
-            limit: maxPostsInPage,
-            skip: index * maxPostsInPage,
-          },
-        });
+    const { edges = [] } = result.data.allMarkdownRemark;
+
+    const tagSet = new Set();
+
+    createPaginatedPages({
+      edges,
+      createPage,
+      pageTemplate: 'src/templates/index.js',
+      context: {
+        totalCount: edges.length,
+      },
+      pathPrefix: 'pages',
+      buildPath: (index, pathPrefix) => {
+        if (index > 1) {
+          return `${pathPrefix}/${index}`;
+        }
+        return '/';
+      },
+    });
+
+    // 創建文章頁面
+    edges.forEach(({ node }, index) => {
+      const { id, frontmatter, fields } = node;
+      const { slug, tags, templateKey } = frontmatter;
+
+      // 讀取標籤
+      if (tags) {
+        tags.forEach(item => tagSet.add(item));
       }
 
-      posts.map(({ node }, index) => {
-        const { createdDate, url } = node;
-        const date = dayjs(createdDate).format('YYYY/MM/DD');
-        const postPath = url === 'about' ? url : `${url}`;
-        return createPage({
-          path: postPath,
-          component: path.resolve('./src/templates/blog-post.js'),
-          context: {
-            // Data passed to context is available in page queries as GraphQL variables.
-            index,
-          },
-        });
+      // 允许自定义地址
+      let $path = fields.slug;
+      if (slug) {
+        $path = slug;
+      }
+
+      const component = templateKey || 'blog-post';
+
+      createPage({
+        path: $path,
+        tags,
+        component: path.resolve(`src/templates/${String(component)}.js`),
+        // additional data can be passed via context
+        context: {
+          id,
+          index,
+        },
       });
-      return resolve();
+    });
+
+    // 創建標籤頁面
+    return tagSet.forEach((tag) => {
+      createPage({
+        path: `/tag/${tag}`,
+        component: path.resolve('src/templates/tag.js'),
+        context: {
+          tag,
+        },
+      });
     });
   });
 };

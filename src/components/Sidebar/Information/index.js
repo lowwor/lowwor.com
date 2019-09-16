@@ -7,12 +7,17 @@ import LatestPost from '../LatestPost';
 import './index.scss';
 import Donation from '../Donation';
 
+// eslint-disable-next-line react/prop-types
 const Information = ({ totalCount, posts }) => (
   <div className="d-none d-lg-block information my-2">
     <hr />
     <Donation />
     <hr />
-    <p>共{totalCount}篇文章</p>
+    <p>
+      共&nbsp;
+      {totalCount}
+      &nbsp;篇文章
+    </p>
     <hr />
     <LatestPost posts={posts} />
     <hr />
@@ -20,9 +25,15 @@ const Information = ({ totalCount, posts }) => (
   </div>
 );
 
-
 Information.propTypes = {
   totalCount: PropTypes.number.isRequired,
+  posts: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.object]))
+
+  ,
+};
+
+Information.defaultProps = {
+  posts: [],
 };
 
 export default Information;
